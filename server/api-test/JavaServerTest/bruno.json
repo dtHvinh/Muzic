@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "JavaServerTest",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

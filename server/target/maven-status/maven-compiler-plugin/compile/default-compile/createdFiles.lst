@@ -1,0 +1,5 @@
+com\dthvinh\test\Utils\ResponseUtils.class
+com\dthvinh\test\Test.class
+com\dthvinh\test\Reflection\Anotations\Endpoint.class
+com\dthvinh\test\Endpoints\BaseEndpoint.class
+com\dthvinh\test\Endpoints\HelloEndpoint.class
