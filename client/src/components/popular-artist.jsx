@@ -1,4 +1,5 @@
 import { useRoutingContext } from "../context/RoutingContext";
+import ArtistCard from "./artist-card";
 
 const artists = [
   {
@@ -59,21 +60,7 @@ export default function ArtistsSection() {
       </div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
         {artists.map((artist) => (
-          <div key={artist.id} className="group cursor-pointer text-center">
-            <div className="relative mx-auto mb-3 h-64 w-64 overflow-hidden rounded-full">
-              <img
-                src={artist.image || "https://placehold.co/56x56"}
-                alt={artist.name}
-                className="aspect-square w-full object-cover transition-all group-hover:scale-105"
-              />
-            </div>
-            <h3 className="truncate font-medium text-foreground">
-              {artist.name}
-            </h3>
-            <p className="text-xs text-muted-foreground">
-              {artist.genre} • {artist.followers} followers
-            </p>
-          </div>
+          <ArtistCard id={artist.id} artist={artist} />
         ))}
       </div>
     </section>
