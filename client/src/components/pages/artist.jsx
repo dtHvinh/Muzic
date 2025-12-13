@@ -1,5 +1,6 @@
 import { useArtist } from "../../hooks/useArtist";
 import { useSearchArtist } from "../../hooks/useSearchArtist";
+import AddArtistButton from "../add-artist-button";
 import ArtistCard, { SkeletonArtistCard } from "../artist-card";
 
 export default function Artist() {
@@ -12,6 +13,9 @@ export default function Artist() {
   return (
     <div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 space-y-5">
+        <div className="flex">
+          <AddArtistButton />
+        </div>
         {artists.map((artist) => (
           <ArtistCard
             artist={artist}
