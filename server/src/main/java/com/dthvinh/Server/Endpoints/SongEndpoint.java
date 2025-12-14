@@ -64,8 +64,7 @@ public class SongEndpoint extends BaseEndpoint {
             created = songs.save(new Song(
                     dto.title(),
                     dto.artistId(),
-                    dto.spotifyId(),
-                    dto.durationMs()));
+                    dto.spotifyId()));
         } catch (Exception e) {
             return;
         }

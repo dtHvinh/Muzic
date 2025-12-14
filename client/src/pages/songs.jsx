@@ -16,7 +16,7 @@ export default function Songs() {
           <li key={song.id} className="rounded-2xl bg-secondary/30 p-4">
             <p className="text-lg font-semibold">{song.title}</p>
             <p className="text-sm text-muted-foreground">
-              Artist ID: {song.artistId} • Duration: {song.durationMs ?? "—"} ms
+              Artist ID: {song.artistId}
             </p>
             {song.notes && <p className="text-sm mt-2">{song.notes}</p>}
           </li>

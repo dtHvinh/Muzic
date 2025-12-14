@@ -7,15 +7,13 @@ public record SongResponseDto(
         Long id,
         String title,
         @JsonProperty("artistId") Long artistId,
-        @JsonProperty("spotifyId") String spotifyId,
-        @JsonProperty("durationMs") Integer durationMs) {
+        @JsonProperty("spotifyId") String spotifyId) {
 
     public static SongResponseDto from(Song song) {
         return new SongResponseDto(
                 song.getId(),
                 song.getTitle(),
                 song.getArtistId(),
-                song.getSpotifyId(),
-                song.getDurationMs());
+                song.getSpotifyId());
     }
 }

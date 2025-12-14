@@ -27,7 +27,6 @@ public class SongRepository implements Repository<Song, Long> {
                 rs.getString("title"),
                 rs.getLong("artist_id"),
                 rs.getString("spotify_id"),
-                rs.getObject("duration_ms") != null ? rs.getInt("duration_ms") : null,
                 rs.getObject("created_at", LocalDateTime.class),
                 rs.getObject("updated_at", LocalDateTime.class));
     }
@@ -35,8 +34,8 @@ public class SongRepository implements Repository<Song, Long> {
     @Override
     public Song save(Song s) {
         String sql = """
-                INSERT INTO song (title, artist_id, spotify_id, duration_ms)
-                VALUES (?, ?, ?, ?)
+                INSERT INTO song (title, artist_id, spotify_id)
+                VALUES (?, ?, ?)
                 RETURNING *
                 """;
         try (var t = DatabaseService.startTransaction();
@@ -44,7 +43,6 @@ public class SongRepository implements Repository<Song, Long> {
             ps.setString(1, s.getTitle());
             ps.setLong(2, s.getArtistId());
             ps.setString(3, s.getSpotifyId());
-            ps.setObject(4, s.getDurationMs());
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
             }
@@ -108,7 +106,7 @@ public class SongRepository implements Repository<Song, Long> {
         String sql = """
                 UPDATE song SET
                     title = ?, artist_id = ?,
-                    spotify_id = ?, duration_ms = ?, updated_at = CURRENT_TIMESTAMP
+                    spotify_id = ?, updated_at = CURRENT_TIMESTAMP
                 WHERE id = ? RETURNING *
                 """;
         try (var t = DatabaseService.startTransaction();
@@ -116,8 +114,7 @@ public class SongRepository implements Repository<Song, Long> {
             ps.setString(1, s.getTitle());
             ps.setLong(2, s.getArtistId());
             ps.setString(3, s.getSpotifyId());
-            ps.setObject(4, s.getDurationMs());
-            ps.setLong(5, id);
+            ps.setLong(4, id);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? map(rs) : null;
             }
