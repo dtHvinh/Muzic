@@ -55,7 +55,7 @@ public class ArtistEndpoint extends BaseEndpoint {
         }
 
         List<ArtistResponseDto> artists = artistRepository
-                .findAll(params.get("name"),
+                .findAll(params.get("query"),
                         Integer.valueOf(params.get("limit")),
                         Integer.valueOf(params.get("offset")))
                 .stream()

@@ -1,8 +1,8 @@
 import { X } from "lucide-react";
 import React from "react";
 import { useAddSongModal } from "../hooks/useAddSongModal";
-import { useSearchArtist } from "../hooks/useSearchArtist";
 import { useSong } from "../hooks/useSong";
+import ArtistSelect from "./artist-select";
 
 export default function AddSongModal({ open, onClose }) {
   const [form, setForm] = React.useState({
@@ -10,21 +10,24 @@ export default function AddSongModal({ open, onClose }) {
     artist_id: "",
     spotify_id: "",
   });
+  const [artistError, setArtistError] = React.useState("");
 
   const { createSong, isLoading } = useSong();
   const { fireAllEvents } = useAddSongModal();
-  const { artists, isLoading: isArtistsLoading } = useSearchArtist({
-    offset: 0,
-    limit: 50,
-  });
 
   const handleClose = () => {
     onClose?.();
     setForm({ title: "", artist_id: "", spotify_id: "" });
+    setArtistError("");
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.artist_id) {
+      setArtistError("Please choose an artist");
+      return;
+    }
+    setArtistError("");
     const payload = {
       title: form.title.trim(),
       artist_id: Number(form.artist_id),
@@ -88,34 +91,14 @@ export default function AddSongModal({ open, onClose }) {
               />
             </label>
 
-            <label className="group flex flex-col gap-2">
-              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                Artist
-              </span>
-              <select
-                value={form.artist_id}
-                onChange={(e) =>
-                  setForm({ ...form, artist_id: e.target.value })
-                }
-                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground shadow-inner transition focus:border-primary/60 focus:outline-none focus:ring-4 focus:ring-primary/15 disabled:opacity-60"
-                required
-                disabled={isArtistsLoading}
-              >
-                <option value="" disabled>
-                  {isArtistsLoading ? "Loading artists..." : "Select artist"}
-                </option>
-                {artists.map((artist) => (
-                  <option key={artist.id} value={artist.id}>
-                    {artist.name}
-                  </option>
-                ))}
-              </select>
-              {artists.length === 0 && !isArtistsLoading && (
-                <span className="text-xs text-muted-foreground">
-                  No artists available. Add an artist first.
-                </span>
-              )}
-            </label>
+            <ArtistSelect
+              value={form.artist_id}
+              onChange={(artistId) => {
+                setForm({ ...form, artist_id: artistId });
+                setArtistError("");
+              }}
+              error={artistError}
+            />
 
             <label className="group flex flex-col gap-2">
               <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
