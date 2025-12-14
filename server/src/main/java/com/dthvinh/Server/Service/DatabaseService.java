@@ -11,6 +11,11 @@ public class DatabaseService {
     private static final String PASS = "0";
 
     public static void initDb() {
+        createArtistTable();
+        createSongTable();
+    }
+
+    private static void createArtistTable() {
         String sql = """
                 CREATE TABLE IF NOT EXISTS artist (
                     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
@@ -23,11 +28,37 @@ public class DatabaseService {
                 )
                 """;
 
+        execute(sql, "Failed to create artist table");
+    }
+
+    private static void createSongTable() {
+        String sql = """
+                CREATE TABLE IF NOT EXISTS song (
+                    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+                    title VARCHAR(255) NOT NULL,
+                    lyrics TEXT,
+                    notes TEXT,
+                    artist_id BIGINT NOT NULL,
+                    spotify_id VARCHAR(64) UNIQUE,
+                    duration_ms INTEGER,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+                    CONSTRAINT fk_song_artist
+                        FOREIGN KEY (artist_id) REFERENCES artist(id)
+                        ON DELETE CASCADE
+                )
+                """;
+
+        execute(sql, "Failed to create song table");
+    }
+
+    private static void execute(String sql, String errorMessage) {
         try (Connection c = DriverManager.getConnection(URL, USER, PASS);
-             Statement s = c.createStatement()) {
+                Statement s = c.createStatement()) {
             s.executeUpdate(sql);
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to create table", e);
+            throw new RuntimeException(errorMessage, e);
         }
     }
 
