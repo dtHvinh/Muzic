@@ -1,19 +1,28 @@
 "use client";
 
-import { Heart, Home, ListMusic, Music, Music2, Search } from "lucide-react";
+import {
+  AudioLines,
+  Heart,
+  Home,
+  ListMusic,
+  Music,
+  Music2,
+  Search,
+} from "lucide-react";
 import { useState } from "react";
-import Link from '../components/core/link';
+import Link from "../components/core/link";
 import { cn } from "../lib/utils";
 
 const menuItems = [
-  { icon: Home, href: 'home', label: "Home", active: true },
-  { icon: Search, href: 'search', label: "Search" },
+  { icon: Home, href: "home", label: "Home", active: true },
+  { icon: Search, href: "search", label: "Search" },
 ];
 
 const menuItems2 = [
-  { icon: ListMusic, href: 'playlist', label: "Playlist" },
-  { icon: Music, href: 'artist', label: "Artists" },
-  { icon: Heart, href: 'liked', label: "Liked Songs" },
+  { icon: AudioLines, href: "song", label: "Songs" },
+  { icon: ListMusic, href: "playlist", label: "Playlist" },
+  { icon: Music, href: "artist", label: "Artists" },
+  { icon: Heart, href: "liked", label: "Liked Songs" },
 ];
 
 export default function Sidebar() {
@@ -53,7 +62,6 @@ export default function Sidebar() {
           ))}
         </nav>
       </div>
-
     </aside>
   );
 }

@@ -8,6 +8,7 @@ import Home from "./pages/home";
 import Liked from "./pages/liked";
 import PlayList from "./pages/playlist";
 import Search from "./pages/search";
+import Songs from "./pages/songs";
 import "./types/musicbrainz.d.js";
 
 function App() {
@@ -17,11 +18,17 @@ function App() {
     setFallback(<Fallback />);
 
     mapRoute("home", <Home />);
+
     mapRoute("search", <Search />);
+
     mapRoute("playlist", <PlayList />);
+
     mapRoute("liked", <Liked />);
+
     mapRoute("artist", <Artist />);
     mapRoute("artist/edit", <ArtistEdit />);
+
+    mapRoute("song", <Songs />);
   }, []);
 
   return getRouteContent();
