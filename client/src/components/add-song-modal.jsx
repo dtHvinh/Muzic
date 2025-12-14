@@ -1,6 +1,7 @@
 import { X } from "lucide-react";
 import React from "react";
 import { useAddSongModal } from "../hooks/useAddSongModal";
+import { useMediaUpload } from "../hooks/useMediaUpload";
 import { useSong } from "../hooks/useSong";
 import ArtistSelect from "./artist-select";
 
@@ -11,6 +12,13 @@ export default function AddSongModal({ open, onClose }) {
     spotify_id: "",
   });
   const [artistError, setArtistError] = React.useState("");
+  const [audioFile, setAudioFile] = React.useState(null);
+
+  const {
+    uploadSongFile,
+    isUploading: isUploadingFile,
+    error: uploadError,
+  } = useMediaUpload();
 
   const { createSong, isLoading } = useSong();
   const { fireAllEvents } = useAddSongModal();
@@ -19,6 +27,7 @@ export default function AddSongModal({ open, onClose }) {
     onClose?.();
     setForm({ title: "", artist_id: "", spotify_id: "" });
     setArtistError("");
+    setAudioFile(null);
   };
 
   const handleSubmit = async (e) => {
@@ -28,11 +37,21 @@ export default function AddSongModal({ open, onClose }) {
       return;
     }
     setArtistError("");
+    let audioUrl;
+    if (audioFile) {
+      audioUrl = await uploadSongFile(audioFile);
+      if (!audioUrl) {
+        return;
+      }
+    }
     const payload = {
       title: form.title.trim(),
       artist_id: Number(form.artist_id),
       spotify_id: form.spotify_id.trim() || undefined,
     };
+    if (audioUrl) {
+      payload.audio_url = audioUrl;
+    }
     const res = await createSong(payload);
     if (res) {
       fireAllEvents();
@@ -115,6 +134,26 @@ export default function AddSongModal({ open, onClose }) {
               />
             </label>
 
+            <label className="group flex flex-col gap-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Audio File
+              </span>
+              <input
+                type="file"
+                accept="audio/*"
+                onChange={(e) => setAudioFile(e.target.files?.[0] ?? null)}
+                className="rounded-2xl border border-dashed border-white/10 bg-transparent px-4 py-6 text-sm text-foreground shadow-inner transition hover:border-primary/60 focus:border-primary/60 focus:outline-none"
+              />
+              {audioFile && (
+                <span className="text-xs text-muted-foreground">
+                  Selected: {audioFile.name}
+                </span>
+              )}
+              {uploadError && (
+                <span className="text-xs text-red-400">{uploadError}</span>
+              )}
+            </label>
+
             <div className="flex flex-col-reverse gap-3 md:flex-row md:items-center md:justify-between">
               <button
                 type="button"
@@ -128,9 +167,9 @@ export default function AddSongModal({ open, onClose }) {
               <button
                 type="submit"
                 className="w-full rounded-2xl bg-primary! px-6 py-3 text-sm font-semibold shadow-[0_15px_40px_-15px_rgba(56,189,248,0.55)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-20px_rgba(56,189,248,0.7)] disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none md:w-auto"
-                disabled={isLoading}
+                disabled={isLoading || isUploadingFile}
               >
-                {isLoading ? "Saving song..." : "Add Song"}
+                {isLoading || isUploadingFile ? "Saving song..." : "Add Song"}
               </button>
             </div>
           </form>

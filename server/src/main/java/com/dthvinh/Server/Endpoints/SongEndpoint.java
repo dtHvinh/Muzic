@@ -1,11 +1,13 @@
 package com.dthvinh.Server.Endpoints;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 import com.dthvinh.Server.DTOs.CreateSongDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
+import com.dthvinh.Server.DTOs.UpdateSongDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.Models.Song;
 import com.dthvinh.Server.Repositories.SongRepository;
@@ -22,6 +24,8 @@ public class SongEndpoint extends BaseEndpoint {
             handleGet(exchange);
         } else if (isPost(exchange)) {
             handleCreate(exchange);
+        } else if (isPut(exchange)) {
+            handleUpdate(exchange);
         } else {
             sendBadRequest(exchange, "Unsupported verb");
         }
@@ -62,13 +66,44 @@ public class SongEndpoint extends BaseEndpoint {
         Song created;
         try {
             created = songs.save(new Song(
-                    dto.title(),
+                    dto.title().trim(),
                     dto.artistId(),
-                    dto.spotifyId()));
+                    dto.spotifyId(),
+                    dto.audioUrl()));
         } catch (Exception e) {
+            sendBadRequest(exchange, "Failed to create song");
             return;
         }
 
-        sendOk(exchange, Map.of("id", created.getId()));
+        sendOk(exchange, SongResponseDto.from(created));
+    }
+
+    private void handleUpdate(HttpExchange exchange) throws IOException {
+        Map<String, String> params = parseQueryParams(exchange);
+        if (!params.containsKey("id")) {
+            sendBadRequest(exchange, "id is required");
+            return;
+        }
+
+        Long id = Long.valueOf(params.get("id"));
+        UpdateSongDto dto = parseBody(exchange, UpdateSongDto.class);
+
+        Song current = songs.findById(id).orElse(null);
+        if (current == null) {
+            sendNotFound(exchange);
+            return;
+        }
+
+        Song updated = new Song(
+                current.getId(),
+                dto.title() != null && !dto.title().isBlank() ? dto.title().trim() : current.getTitle(),
+                dto.artistId() != null ? dto.artistId() : current.getArtistId(),
+                dto.spotifyId() != null && !dto.spotifyId().isBlank() ? dto.spotifyId().trim() : current.getSpotifyId(),
+                dto.audioUrl() != null && !dto.audioUrl().isBlank() ? dto.audioUrl().trim() : current.getAudioUrl(),
+                current.getCreatedAt(),
+                LocalDateTime.now());
+
+        Song saved = songs.update(id, updated);
+        sendOk(exchange, SongResponseDto.from(saved));
     }
 }

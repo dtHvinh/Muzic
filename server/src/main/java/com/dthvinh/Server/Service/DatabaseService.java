@@ -38,6 +38,7 @@ public class DatabaseService {
                     title VARCHAR(255) NOT NULL,
                     artist_id BIGINT NOT NULL,
                     spotify_id VARCHAR(64) UNIQUE,
+                    audio_url VARCHAR(512),
                     duration_ms INTEGER,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
