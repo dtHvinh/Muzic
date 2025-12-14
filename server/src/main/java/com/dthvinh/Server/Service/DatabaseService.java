@@ -36,8 +36,6 @@ public class DatabaseService {
                 CREATE TABLE IF NOT EXISTS song (
                     id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
                     title VARCHAR(255) NOT NULL,
-                    lyrics TEXT,
-                    notes TEXT,
                     artist_id BIGINT NOT NULL,
                     spotify_id VARCHAR(64) UNIQUE,
                     duration_ms INTEGER,

@@ -1,19 +1,21 @@
 package com.dthvinh.Server.Endpoints.Base;
 
-import com.dthvinh.Server.SummerBoot.Mornitoring.Logger;
-import com.dthvinh.Server.Utils.ResponseUtils;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.dthvinh.Server.SummerBoot.Mornitoring.Logger;
+import com.dthvinh.Server.Utils.ResponseUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
 /**
  *
@@ -63,6 +65,17 @@ public abstract class BaseEndpoint implements HttpHandler {
             params.put(key, value);
         }
         return params;
+    }
+
+    public Map<String, Object> parseBodyAsMap(HttpExchange exchange) throws IOException {
+        try (InputStream in = exchange.getRequestBody()) {
+            if (in.available() == 0) {
+                return Map.of();
+            }
+
+            return mapper.readValue(in, new TypeReference<Map<String, Object>>() {
+            });
+        }
     }
 
     public <T> T parseBody(HttpExchange exchange, Class<T> clazz) throws IOException {
