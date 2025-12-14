@@ -1,8 +1,26 @@
 import { useCallback, useState } from "react";
+import {
+  assertSupabaseConfigured,
+  supabase,
+} from "../constants/supabase-client";
+
+function getFileExtension(filename) {
+  const idx = String(filename || "").lastIndexOf(".");
+  return idx >= 0
+    ? String(filename)
+        .slice(idx + 1)
+        .toLowerCase()
+    : "";
+}
+
+function makeId() {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+}
 
 export function useMediaUpload() {
-  const uploadUrl = import.meta.env.VITE_MEDIA_UPLOAD_URL;
-  const publicBaseUrl = import.meta.env.VITE_MEDIA_PUBLIC_BASE_URL ?? "";
+  const bucket = import.meta.env.VITE_SUPABASE_BUCKET;
+  const folder = import.meta.env.VITE_SUPABASE_FOLDER ?? "songs";
 
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState("");
@@ -10,8 +28,15 @@ export function useMediaUpload() {
   const uploadSongFile = useCallback(
     async (file) => {
       if (!file) return null;
-      if (!uploadUrl) {
-        setError("Missing VITE_MEDIA_UPLOAD_URL");
+
+      const cfgErr = assertSupabaseConfigured();
+      if (cfgErr) {
+        setError(cfgErr);
+        return null;
+      }
+
+      if (!bucket) {
+        setError("Missing VITE_SUPABASE_BUCKET");
         return null;
       }
 
@@ -19,31 +44,44 @@ export function useMediaUpload() {
       setError("");
 
       try {
-        const fd = new FormData();
-        fd.append("file", file);
+        const ext = getFileExtension(file.name);
+        const safeExt = ext ? `.${ext}` : "";
+        const objectPath = `${String(folder).replace(
+          /(^\/|\/$)/g,
+          ""
+        )}/${makeId()}${safeExt}`;
 
-        const res = await fetch(uploadUrl, {
-          method: "POST",
-          body: fd,
-        });
+        const { error: uploadError } = await supabase.storage
+          .from(bucket)
+          .upload(objectPath, file, {
+            contentType: file.type || undefined,
+            upsert: false,
+          });
 
-        if (!res.ok) {
-          const text = await res.text().catch(() => "");
-          setError(text || `Upload failed (${res.status})`);
+        if (uploadError) {
+          setError(uploadError.message || "Upload failed");
           return null;
         }
 
-        const data = await res.json().catch(() => ({}));
+        const publicRes = supabase.storage
+          .from(bucket)
+          .getPublicUrl(objectPath);
+        const publicUrl = publicRes?.data?.publicUrl;
+        if (publicUrl) return publicUrl;
 
-        if (data?.url) return data.url;
-        if (data?.path) {
-          const base = publicBaseUrl.replace(/\/$/, "");
-          const path = String(data.path).replace(/^\//, "");
-          return base ? `${base}/${path}` : `/${path}`;
+        const { data: signedData, error: signedErr } = await supabase.storage
+          .from(bucket)
+          .createSignedUrl(objectPath, 60 * 60);
+
+        if (signedErr) {
+          setError(
+            signedErr.message ||
+              "Upload succeeded but URL creation failed (make the bucket public, or allow signed URLs)"
+          );
+          return null;
         }
 
-        setError("Upload failed: missing url/path in response");
-        return null;
+        return signedData?.signedUrl || null;
       } catch (e) {
         setError(e?.message || "Upload failed");
         return null;
@@ -51,7 +89,7 @@ export function useMediaUpload() {
         setIsUploading(false);
       }
     },
-    [uploadUrl, publicBaseUrl]
+    [bucket, folder]
   );
 
   return { uploadSongFile, isUploading, error };
