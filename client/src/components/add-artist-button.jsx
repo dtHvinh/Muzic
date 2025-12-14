@@ -1,6 +1,6 @@
 import { Plus } from "lucide-react";
-import { useAddArtistModal } from "../context/AddArtistModalContext";
-import { useRoutingContext } from "../context/RoutingContext";
+import { useAddArtistModal } from "../hooks/useAddArtistModal";
+import { useRoutingContext } from "../hooks/useRoutingContext";
 
 export default function AddArtistButton() {
   const { currentRoute } = useRoutingContext();

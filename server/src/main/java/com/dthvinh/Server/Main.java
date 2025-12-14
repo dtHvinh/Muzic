@@ -1,9 +1,10 @@
 package com.dthvinh.Server;
 
+import java.net.InetSocketAddress;
+
 import com.dthvinh.Server.Service.DatabaseService;
 import com.dthvinh.Server.SummerBoot.Reflection.EndpointService;
 import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
 
 public class Main {
 
@@ -17,6 +18,7 @@ public class Main {
 
         server.setExecutor(null);
         server.start();
+
         System.out.println("Server running on http://localhost:" + PORT);
     }
 }

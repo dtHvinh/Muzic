@@ -1,4 +1,4 @@
-import { useRoutingContext } from "../context/RoutingContext";
+import { useRoutingContext } from "../hooks/useRoutingContext";
 import ArtistCard from "./artist-card";
 
 const artists = [

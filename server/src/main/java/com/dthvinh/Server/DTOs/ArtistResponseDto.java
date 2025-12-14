@@ -7,18 +7,14 @@ public record ArtistResponseDto(
         Long id,
         String name,
         String bio,
-        @JsonProperty("profileImage")     // → "profileImage" in JSON
-        String profileImage,
-        @JsonProperty("spotifyId")        // → "spotifyId" in JSON
-        String spotifyId
-) {
+        @JsonProperty("profileImage") String profileImage,
+        @JsonProperty("spotifyId") String spotifyId) {
     public static ArtistResponseDto from(Artist artist) {
         return new ArtistResponseDto(
                 artist.getId(),
                 artist.getName(),
                 artist.getBio(),
                 artist.getProfileImage(),
-                artist.getSpotifyId()
-        );
+                artist.getSpotifyId());
     }
 }

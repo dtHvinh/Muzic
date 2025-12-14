@@ -5,12 +5,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record UpdateArtistDto(
-        String name,
-        String bio,
-        @JsonProperty("profile_image")
-        String profileImage,
-        @JsonProperty("spotify_id")
-        String spotifyId
+                String name,
+                String bio,
+                @JsonProperty("profile_image") String profileImage,
+                @JsonProperty("spotify_id") String spotifyId
 
 ) {
 }

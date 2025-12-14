@@ -1,7 +1,7 @@
-import { useArtist } from "../../hooks/useArtist";
-import { useSearchArtist } from "../../hooks/useSearchArtist";
-import AddArtistButton from "../add-artist-button";
-import ArtistCard, { SkeletonArtistCard } from "../artist-card";
+import AddArtistButton from "../components/add-artist-button";
+import ArtistCard, { SkeletonArtistCard } from "../components/artist-card";
+import { useArtist } from "../hooks/useArtist";
+import { useSearchArtist } from "../hooks/useSearchArtist";
 
 export default function Artist() {
   const { artists, isLoading, reset } = useSearchArtist({
@@ -18,6 +18,7 @@ export default function Artist() {
         </div>
         {artists.map((artist) => (
           <ArtistCard
+            key={artist.id}
             artist={artist}
             cardProps={{
               size: 24,

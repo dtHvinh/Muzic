@@ -1,5 +1,11 @@
 package com.dthvinh.Server.Endpoints;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.dthvinh.Server.DTOs.ArtistResponseDto;
 import com.dthvinh.Server.DTOs.CreateArtistDto;
 import com.dthvinh.Server.DTOs.UpdateArtistDto;
@@ -8,12 +14,6 @@ import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  *
@@ -59,7 +59,7 @@ public class ArtistEndpoint extends BaseEndpoint {
                         Integer.valueOf(params.get("limit")),
                         Integer.valueOf(params.get("offset")))
                 .stream()
-                .map(ArtistResponseDto::from)   // ← convert each Artist → DTO
+                .map(ArtistResponseDto::from)
                 .toList();
 
         logger.Console("There is {%d} artist match query \"%s\"".formatted(artists.size(), params.get("name")));
@@ -117,8 +117,7 @@ public class ArtistEndpoint extends BaseEndpoint {
                 dto.profileImage() != null ? dto.profileImage() : current.getProfileImage(),
                 dto.spotifyId() != null ? dto.spotifyId() : current.getSpotifyId(),
                 current.getCreatedAt(),
-                LocalDateTime.now()
-        );
+                LocalDateTime.now());
 
         Artist saved = artistRepository.update(id, updated);
         sendOk(exchange, ArtistResponseDto.from(saved));
