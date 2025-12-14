@@ -10,6 +10,7 @@ import com.dthvinh.Server.DTOs.SongResponseDto;
 import com.dthvinh.Server.DTOs.UpdateSongDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.Models.Song;
+import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.Repositories.SongRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
@@ -17,6 +18,7 @@ import com.sun.net.httpserver.HttpExchange;
 @Endpoint(route = "songs")
 public class SongEndpoint extends BaseEndpoint {
     private final SongRepository songs = SongRepository.getInstance();
+    private final ArtistRepository artists = ArtistRepository.getInstance();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -35,7 +37,12 @@ public class SongEndpoint extends BaseEndpoint {
         Map<String, String> params = parseQueryParams(exchange);
         if (params.containsKey("id")) {
             var song = songs.findById(Long.valueOf(params.get("id")))
-                    .map(SongResponseDto::from)
+                    .map(s -> {
+                        String artistName = artists.findById(s.getArtistId())
+                                .map(a -> a.getName())
+                                .orElse(null);
+                        return SongResponseDto.from(s, artistName);
+                    })
                     .orElse(null);
             if (song == null) {
                 sendNotFound(exchange);
@@ -50,7 +57,12 @@ public class SongEndpoint extends BaseEndpoint {
                         params.get("limit") == null ? null : Integer.valueOf(params.get("limit")),
                         params.get("offset") == null ? null : Integer.valueOf(params.get("offset")))
                 .stream()
-                .map(SongResponseDto::from)
+                .map(s -> {
+                    String artistName = artists.findById(s.getArtistId())
+                            .map(a -> a.getName())
+                            .orElse(null);
+                    return SongResponseDto.from(s, artistName);
+                })
                 .toList();
 
         sendOk(exchange, Map.of("songs", list));
