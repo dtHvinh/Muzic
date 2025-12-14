@@ -1,18 +1,27 @@
 import { X } from "lucide-react";
 import React from "react";
-import { useSong } from "../hooks/useSong";
 import { useAddSongModal } from "../hooks/useAddSongModal";
+import { useSearchArtist } from "../hooks/useSearchArtist";
+import { useSong } from "../hooks/useSong";
 
 export default function AddSongModal({ open, onClose }) {
   const [form, setForm] = React.useState({
     title: "",
     artist_id: "",
     spotify_id: "",
-    duration_ms: "",
   });
 
   const { createSong, isLoading } = useSong();
   const { fireAllEvents } = useAddSongModal();
+  const { artists, isLoading: isArtistsLoading } = useSearchArtist({
+    offset: 0,
+    limit: 50,
+  });
+
+  const handleClose = () => {
+    onClose?.();
+    setForm({ title: "", artist_id: "", spotify_id: "" });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,18 +29,11 @@ export default function AddSongModal({ open, onClose }) {
       title: form.title.trim(),
       artist_id: Number(form.artist_id),
       spotify_id: form.spotify_id.trim() || undefined,
-      duration_ms: form.duration_ms ? Number(form.duration_ms) : undefined,
     };
     const res = await createSong(payload);
     if (res) {
       fireAllEvents();
-      onClose?.();
-      setForm({
-        title: "",
-        artist_id: "",
-        spotify_id: "",
-        duration_ms: "",
-      });
+      handleClose();
     }
   };
 
@@ -39,72 +41,117 @@ export default function AddSongModal({ open, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-10">
-      <div className="absolute inset-0 bg-black/70" onClick={onClose} />
-      <div className="relative w-full max-w-2xl rounded-3xl bg-card p-8">
-        <header className="mb-6 flex items-center justify-between">
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground">
-              Song Management
-            </p>
-            <h2 className="text-3xl font-semibold">Add Song</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="rounded-full border border-white/10 p-2"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </header>
+      <div
+        className="absolute inset-0 bg-linear-to-br from-black/70 via-black/60 to-black/80 backdrop-blur-lg"
+        onClick={handleClose}
+      />
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            className="w-full rounded-xl border bg-secondary/20 px-4 py-3"
-            placeholder="Title"
-            value={form.title}
-            onChange={(e) => setForm({ ...form, title: e.target.value })}
-            required
-          />
-          <input
-            className="w-full rounded-xl border bg-secondary/20 px-4 py-3"
-            placeholder="Artist ID"
-            value={form.artist_id}
-            onChange={(e) => setForm({ ...form, artist_id: e.target.value })}
-            required
-          />
-          <div className="grid gap-4 md:grid-cols-2">
-            <input
-              className="rounded-xl border bg-secondary/20 px-4 py-3"
-              placeholder="Spotify ID"
-              value={form.spotify_id}
-              onChange={(e) => setForm({ ...form, spotify_id: e.target.value })}
-            />
-            <input
-              className="rounded-xl border bg-secondary/20 px-4 py-3"
-              placeholder="Duration (ms)"
-              value={form.duration_ms}
-              onChange={(e) =>
-                setForm({ ...form, duration_ms: e.target.value })
-              }
-            />
-          </div>
+      <div className="relative w-full max-w-2xl overflow-hidden rounded-3xl border border-white/10 bg-linear-to-br from-[#111016] via-[#121422] to-[#0f131c] shadow-[0_30px_80px_-40px_rgba(59,130,246,0.45)]">
+        <div className="absolute -top-24 -right-12 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -bottom-20 -left-16 h-48 w-48 rounded-full bg-secondary/30 blur-3xl" />
 
-          <div className="flex justify-end gap-3 pt-4">
+        <div className="relative flex flex-col gap-8 p-10">
+          <header className="flex items-start justify-between gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.35em] text-muted-foreground/70">
+                Song Management
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold text-foreground">
+                Add New Song
+              </h2>
+              <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+                Link the track to an existing artist and optionally include its
+                Spotify ID for richer metadata.
+              </p>
+            </div>
             <button
-              type="button"
-              onClick={onClose}
-              className="rounded-xl border px-6 py-3"
+              onClick={handleClose}
+              className="rounded-full border border-white/10 p-2 text-muted-foreground transition-colors duration-150 hover:border-white/30 hover:text-foreground"
+              aria-label="Close"
             >
-              Cancel
+              <X className="h-5 w-5" />
             </button>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="rounded-xl bg-primary px-6 py-3 text-primary-foreground disabled:opacity-60"
-            >
-              {isLoading ? "Saving..." : "Add Song"}
-            </button>
-          </div>
-        </form>
+          </header>
+
+          <form className="grid gap-6" onSubmit={handleSubmit}>
+            <label className="group flex flex-col gap-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Title
+              </span>
+              <input
+                type="text"
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground shadow-inner transition focus:border-primary/60 focus:outline-none focus:ring-4 focus:ring-primary/15"
+                placeholder="eg. Let It Happen"
+                required
+              />
+            </label>
+
+            <label className="group flex flex-col gap-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Artist
+              </span>
+              <select
+                value={form.artist_id}
+                onChange={(e) =>
+                  setForm({ ...form, artist_id: e.target.value })
+                }
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground shadow-inner transition focus:border-primary/60 focus:outline-none focus:ring-4 focus:ring-primary/15 disabled:opacity-60"
+                required
+                disabled={isArtistsLoading}
+              >
+                <option value="" disabled>
+                  {isArtistsLoading ? "Loading artists..." : "Select artist"}
+                </option>
+                {artists.map((artist) => (
+                  <option key={artist.id} value={artist.id}>
+                    {artist.name}
+                  </option>
+                ))}
+              </select>
+              {artists.length === 0 && !isArtistsLoading && (
+                <span className="text-xs text-muted-foreground">
+                  No artists available. Add an artist first.
+                </span>
+              )}
+            </label>
+
+            <label className="group flex flex-col gap-2">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                Spotify Track ID
+              </span>
+              <input
+                type="text"
+                value={form.spotify_id}
+                onChange={(e) =>
+                  setForm({ ...form, spotify_id: e.target.value })
+                }
+                className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-foreground shadow-inner transition focus:border-primary/60 focus:outline-none focus:ring-4 focus:ring-primary/15"
+                placeholder="Optional but recommended"
+              />
+            </label>
+
+            <div className="flex flex-col-reverse gap-3 md:flex-row md:items-center md:justify-between">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="w-full rounded-2xl border border-white/10 px-5 py-3 text-sm font-medium text-muted-foreground transition hover:border-white/30 hover:text-foreground md:w-auto"
+                disabled={isLoading}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="submit"
+                className="w-full rounded-2xl bg-primary! px-6 py-3 text-sm font-semibold shadow-[0_15px_40px_-15px_rgba(56,189,248,0.55)] transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-[0_20px_45px_-20px_rgba(56,189,248,0.7)] disabled:translate-y-0 disabled:opacity-60 disabled:shadow-none md:w-auto"
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving song..." : "Add Song"}
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
