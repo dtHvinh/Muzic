@@ -6,6 +6,7 @@ import { AddArtistModalContext } from "./AddArtistModalContext";
 export function AddArtistModalProvider({ children }) {
   const { currentRoute } = useRoutingContext();
   const [isOpen, setIsOpen] = React.useState(false);
+  const [events, setEvents] = React.useState([]);
 
   const openAddArtistModal = React.useCallback(() => {
     setIsOpen(true);
@@ -14,6 +15,15 @@ export function AddArtistModalProvider({ children }) {
   const closeAddArtistModal = React.useCallback(() => {
     setIsOpen(false);
   }, []);
+
+  const registerEvent = React.useCallback((event) => {
+    setEvents((prev) => [...prev, event]);
+  }, []);
+
+  const fireAllEvents = React.useCallback(() => {
+    events.forEach((event) => event());
+    setEvents([]);
+  }, [events]);
 
   React.useEffect(() => {
     if (currentRoute !== "artist" && isOpen) {
@@ -27,6 +37,8 @@ export function AddArtistModalProvider({ children }) {
         isAddArtistModalOpen: isOpen,
         openAddArtistModal,
         closeAddArtistModal,
+        registerEvent,
+        fireAllEvents,
       }}
     >
       {children}

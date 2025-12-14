@@ -1,10 +1,20 @@
 import { Plus } from "lucide-react";
+import { useEffect } from "react";
 import { useAddArtistModal } from "../hooks/useAddArtistModal";
 import { useRoutingContext } from "../hooks/useRoutingContext";
 
-export default function AddArtistButton() {
+export default function AddArtistButton({ onAdd }) {
   const { currentRoute } = useRoutingContext();
-  const { openAddArtistModal } = useAddArtistModal();
+  const { openAddArtistModal, registerEvent } = useAddArtistModal();
+
+  useEffect(() => {
+    if (onAdd) {
+      const event = () => {
+        onAdd();
+      };
+      registerEvent(event);
+    }
+  }, [onAdd, registerEvent]);
 
   if (currentRoute !== "artist") return null;
 

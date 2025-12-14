@@ -13,8 +13,8 @@ export default function Artist() {
   return (
     <div>
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 space-y-5">
-        <div className="flex">
-          <AddArtistButton />
+        <div className="flex w-full col-span-full">
+          <AddArtistButton onAdd={() => reset()} />
         </div>
         {artists.map((artist) => (
           <ArtistCard

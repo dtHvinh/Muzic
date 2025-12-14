@@ -1,5 +1,6 @@
 import { X } from "lucide-react";
 import React from "react";
+import { useAddArtistModal } from "../hooks/useAddArtistModal";
 import { useArtist } from "../hooks/useArtist";
 
 export default function AddArtistModal({ open, onClose }) {
@@ -11,6 +12,7 @@ export default function AddArtistModal({ open, onClose }) {
   });
 
   const { createArtist, isLoading } = useArtist();
+  const { fireAllEvents } = useAddArtistModal();
 
   const handleClose = () => {
     onClose?.();
@@ -30,6 +32,7 @@ export default function AddArtistModal({ open, onClose }) {
     const created = await createArtist(artist);
     if (created) {
       handleClose();
+      fireAllEvents();
     }
   };
 
@@ -110,7 +113,7 @@ export default function AddArtistModal({ open, onClose }) {
                 Profile Image URL
               </span>
               <input
-                type="url"
+                type="text"
                 value={form.profile_image}
                 onChange={(e) =>
                   setForm({ ...form, profile_image: e.target.value })
