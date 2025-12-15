@@ -1,6 +1,6 @@
 "use client";
 
-import { Music, Pause, Play } from "lucide-react";
+import { Music, Pause, Play, Trash2 } from "lucide-react";
 import React from "react";
 
 function formatTime(seconds) {
@@ -15,12 +15,14 @@ export default function SongItem({
   isActive,
   onPlayRequest,
   onPauseRequest,
+  onDelete,
 }) {
   const audioRef = React.useRef(null);
 
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [duration, setDuration] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
   React.useEffect(() => {
     if (!isActive && audioRef.current) {
@@ -47,6 +49,21 @@ export default function SongItem({
     onPlayRequest?.(el, song.id);
   };
 
+  const handleDelete = async (e) => {
+    e?.stopPropagation?.();
+    if (!onDelete || isDeleting) return;
+
+    const ok = confirm(`Delete "${song?.title ?? "this song"}"?`);
+    if (!ok) return;
+
+    setIsDeleting(true);
+    try {
+      await onDelete(song.id);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <li className="group relative overflow-hidden rounded-2xl h-44 bg-linear-to-br from-secondary/40 to-secondary/20 backdrop-blur-sm border border-white/5 transition-all duration-300 hover:border-white/10 hover:shadow-lg">
       <div className="p-5">
@@ -69,19 +86,38 @@ export default function SongItem({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={togglePlay}
-            disabled={!hasAudio}
-            className="relative shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary! text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
-            aria-label={isPlaying ? "Pause" : "Play"}
-          >
-            {isPlaying ? (
-              <Pause className="h-12 w-12 fill-current" />
-            ) : (
-              <Play className="h-12 w-12 fill-current ml-0.5" />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={togglePlay}
+              disabled={!hasAudio}
+              className="relative shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary! text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
+              aria-label={isPlaying ? "Pause" : "Play"}
+            >
+              {isPlaying ? (
+                <Pause className="h-12 w-12 fill-current" />
+              ) : (
+                <Play className="h-12 w-12 fill-current ml-0.5" />
+              )}
+            </button>
+
+            {onDelete && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50"
+                aria-label="Delete song"
+                title="Delete song"
+              >
+                {isDeleting ? (
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                ) : (
+                  <Trash2 className="h-5 w-5" />
+                )}
+              </button>
             )}
-          </button>
+          </div>
         </div>
 
         {hasAudio ? (

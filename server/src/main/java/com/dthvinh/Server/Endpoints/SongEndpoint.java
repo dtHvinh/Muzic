@@ -28,6 +28,8 @@ public class SongEndpoint extends BaseEndpoint {
             handleCreate(exchange);
         } else if (isPut(exchange)) {
             handleUpdate(exchange);
+        } else if (isDelete(exchange)) {
+            handleDelete(exchange);
         } else {
             sendBadRequest(exchange, "Unsupported verb");
         }
@@ -117,5 +119,31 @@ public class SongEndpoint extends BaseEndpoint {
 
         Song saved = songs.update(id, updated);
         sendOk(exchange, SongResponseDto.from(saved));
+    }
+
+    private void handleDelete(HttpExchange exchange) throws IOException {
+        Map<String, String> params = parseQueryParams(exchange);
+        if (!params.containsKey("id") || params.get("id") == null || params.get("id").isBlank()) {
+            sendBadRequest(exchange, "id is required");
+            return;
+        }
+
+        final Long id;
+        try {
+            id = Long.valueOf(params.get("id"));
+        } catch (NumberFormatException e) {
+            sendBadRequest(exchange, "id must be a number");
+            return;
+        }
+
+        try {
+            if (songs.delete(id)) {
+                sendOk(exchange, Map.of("id", id));
+            } else {
+                sendNotFound(exchange);
+            }
+        } catch (Exception e) {
+            sendBadRequest(exchange, "Failed to delete song");
+        }
     }
 }

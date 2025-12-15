@@ -1,10 +1,13 @@
 import React from "react";
 import AddSongButton from "../components/add-song-button";
 import SongItem from "../components/song-item";
+import { useSong } from "../hooks/useSong";
 import { useSongs } from "../hooks/useSongs";
 
 export default function Songs() {
   const { songs, isLoading, refetch } = useSongs({ limit: 50, offset: 0 });
+  const { deleteSong } = useSong();
+
   const activeAudioRef = React.useRef(null);
   const [playingSongId, setPlayingSongId] = React.useState(null);
 
@@ -26,15 +29,32 @@ export default function Songs() {
     setPlayingSongId((cur) => (cur === songId ? null : cur));
   }, []);
 
+  const handleDelete = React.useCallback(
+    async (songId) => {
+      if (playingSongId === songId) {
+        activeAudioRef.current?.pause?.();
+        activeAudioRef.current = null;
+        setPlayingSongId(null);
+      }
+
+      const ok = await deleteSong(songId);
+      if (ok) refetch();
+    },
+    [deleteSong, refetch, playingSongId]
+  );
+
   return (
     <div className="space-y-6">
       <AddSongButton onAdd={refetch} />
+
       {isLoading && (
         <p className="text-center text-muted-foreground">Loading songs…</p>
       )}
+
       {!isLoading && songs.length === 0 && (
         <p className="text-center text-muted-foreground">No songs yet.</p>
       )}
+
       <ul className="space-y-4 grid grid-cols-6 space-x-5">
         {songs.map((song) => (
           <SongItem
@@ -43,6 +63,7 @@ export default function Songs() {
             isActive={playingSongId === song.id}
             onPlayRequest={handlePlayRequest}
             onPauseRequest={handlePauseRequest}
+            onDelete={handleDelete}
           />
         ))}
       </ul>
