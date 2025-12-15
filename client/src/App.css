@@ -2,6 +2,20 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist-Regular.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "DM";
+  src: url("/fonts/DMSans-Regular.ttf") format("truetype");
+}
+
+body {
+  font-family: "DM", "Geist", system-ui, sans-serif;
+}
+
 :root {
   --background: oklch(0.13 0.01 260);
   --foreground: oklch(0.98 0 0);
@@ -114,6 +128,19 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -400% 0;
+  }
+  100% {
+    background-position: 400% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -121,4 +148,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: white transparent;
+}
+
+#root {
+  width: 100%;
 }
