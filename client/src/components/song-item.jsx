@@ -90,14 +90,14 @@ export default function SongItem({
             <button
               type="button"
               onClick={togglePlay}
+              className="p-0 items-center justify-center bg-primary! rounded-full border border-white/10text-foreground transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50"
               disabled={!hasAudio}
-              className="relative shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary! text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
               aria-label={isPlaying ? "Pause" : "Play"}
             >
               {isPlaying ? (
-                <Pause className="h-12 w-12 fill-current" />
+                <Pause className="h-6 w-6" />
               ) : (
-                <Play className="h-12 w-12 fill-current ml-0.5" />
+                <Play className="h-6 w-6 ml-0.5" />
               )}
             </button>
 
@@ -106,7 +106,7 @@ export default function SongItem({
                 type="button"
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50"
+                className="p-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-foreground transition hover:border-white/20 hover:bg-white/10 disabled:opacity-50"
                 aria-label="Delete song"
                 title="Delete song"
               >
