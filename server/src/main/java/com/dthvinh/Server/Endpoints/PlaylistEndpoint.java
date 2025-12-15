@@ -7,6 +7,7 @@ import java.util.Map;
 
 import com.dthvinh.Server.DTOs.CreatePlaylistDto;
 import com.dthvinh.Server.DTOs.PlaylistResponseDto;
+import com.dthvinh.Server.DTOs.SongResponseDto;
 import com.dthvinh.Server.DTOs.UpdatePlaylistDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.Models.Playlist;
@@ -120,9 +121,40 @@ public class PlaylistEndpoint extends BaseEndpoint {
         sendOk(exchange, Map.of("playlists", playlists));
     }
 
-    private void handleGetPlaylistDetails(HttpExchange exchange) {
-        Long playlistId = Long.valueOf(parseQueryParams(exchange).get("id"));
+    @SuppressWarnings("null")
+    private void handleGetPlaylistDetails(HttpExchange exchange) throws IOException {
+        Map<String, String> params = parseQueryParams(exchange);
+        if (!params.containsKey("id") || params.get("id") == null || params.get("id").isBlank()) {
+            sendBadRequest(exchange, "id is required");
+            return;
+        }
 
+        final Long playlistId;
+        try {
+            playlistId = Long.valueOf(params.get("id"));
+        } catch (NumberFormatException e) {
+            sendBadRequest(exchange, "id must be a number");
+            return;
+        }
+
+        Playlist playlist = repository.findById(playlistId).orElse(null);
+        if (playlist == null) {
+            sendNotFound(exchange);
+            return;
+        }
+
+        List<SongResponseDto> songs = repository.findSongsByPlaylistId(playlistId)
+                .stream()
+                .map(s -> new SongResponseDto(
+                        s.songId(),
+                        s.songTitle(),
+                        s.artistId(),
+                        s.artistName(),
+                        s.spotifyId(),
+                        s.audioUrl()))
+                .toList();
+
+        sendOk(exchange, Map.of("songs", songs));
     }
 
     private void handleCreatePlaylist(HttpExchange exchange) throws IOException {
