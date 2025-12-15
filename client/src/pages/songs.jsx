@@ -1,12 +1,14 @@
 import React from "react";
 import AddSongButton from "../components/add-song-button";
 import SongItem from "../components/song-item";
+import usePlaylist from "../hooks/usePlaylist";
 import { useSong } from "../hooks/useSong";
 import { useSongs } from "../hooks/useSongs";
 import SubLayout from "../layouts/sublayout";
 
 export default function Songs() {
   const { songs, isLoading, refetch } = useSongs({ limit: 50, offset: 0 });
+  const { addPlaylistItem } = usePlaylist();
   const { deleteSong } = useSong();
 
   const activeAudioRef = React.useRef(null);
@@ -72,7 +74,7 @@ export default function Songs() {
               onPauseRequest={handlePauseRequest}
               onDelete={handleDelete}
               onAddToPlaylist={(songId, playlistId) =>
-                console.log(songId, playlistId)
+                addPlaylistItem(playlistId, songId)
               }
             />
           ))}

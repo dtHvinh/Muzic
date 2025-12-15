@@ -1,16 +1,18 @@
 package com.dthvinh.Server.Endpoints;
 
-import com.dthvinh.Server.DTOs.*;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import com.dthvinh.Server.DTOs.CreatePlaylistDto;
+import com.dthvinh.Server.DTOs.PlaylistResponseDto;
+import com.dthvinh.Server.DTOs.UpdatePlaylistDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.Models.Playlist;
 import com.dthvinh.Server.Repositories.PlaylistRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 @Endpoint(route = "playlists")
 public class PlaylistEndpoint extends BaseEndpoint {
@@ -18,13 +20,13 @@ public class PlaylistEndpoint extends BaseEndpoint {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        if(isGet(exchange)){
+        if (isGet(exchange)) {
             handleGetPlayList(exchange);
-        } else if (isPost(exchange)){
+        } else if (isPost(exchange)) {
             handleCreatePlaylist(exchange);
-        } else if (isPut(exchange)){
+        } else if (isPut(exchange)) {
             handleUpdatePlaylist(exchange);
-        } else if (isDelete(exchange)){
+        } else if (isDelete(exchange)) {
             handleDeletePlaylist(exchange);
         }
     }
@@ -83,15 +85,11 @@ public class PlaylistEndpoint extends BaseEndpoint {
 
     private void handleGetPlayList(HttpExchange exchange) throws IOException {
         Map<String, String> params = parseQueryParams(exchange);
-        if(params.containsKey("mode")){
-            if(params.get("mode").equalsIgnoreCase("details")) {
+        if (params.containsKey("mode")) {
+            if (params.get("mode").equalsIgnoreCase("details")) {
                 handleGetPlaylistDetails(exchange);
                 return;
-            }else if(params.get("mode").equalsIgnoreCase("add-song")){
-                handleAddSong(exchange);
-                return;
-            }
-            else{
+            } else {
                 sendBadRequest(exchange, "mode not supported");
             }
         }
@@ -125,21 +123,16 @@ public class PlaylistEndpoint extends BaseEndpoint {
     private void handleGetPlaylistDetails(HttpExchange exchange) {
         Long playlistId = Long.valueOf(parseQueryParams(exchange).get("id"));
 
-
-    }
-
-    private  void handleAddSong(HttpExchange exchange) throws IOException {
-        Long playlistId = Long.valueOf(parseQueryParams(exchange).get("playlistId"));
-        Long songId = Long.valueOf(parseQueryParams(exchange).get("songId"));
-
-        repository.addToPlaylist(playlistId, songId);
-
-        logger.Console("Add song #{%d} to playlist #{%d}".formatted(songId, playlistId));
-
-        sendOk(exchange, Map.of("playlistId", playlistId, "songId", songId));
     }
 
     private void handleCreatePlaylist(HttpExchange exchange) throws IOException {
+        Map<String, String> params = parseQueryParams(exchange);
+
+        if (params.get("mode").equalsIgnoreCase("add-song")) {
+            handleAddSong(exchange);
+            return;
+        }
+
         CreatePlaylistDto dto = parseBody(exchange, CreatePlaylistDto.class);
 
         if (dto == null || dto.name() == null) {
@@ -157,5 +150,16 @@ public class PlaylistEndpoint extends BaseEndpoint {
         }
 
         sendOk(exchange, Map.of("id", created.getId()));
+    }
+
+    private void handleAddSong(HttpExchange exchange) throws IOException {
+        Long playlistId = Long.valueOf(parseQueryParams(exchange).get("playlistId"));
+        Long songId = Long.valueOf(parseQueryParams(exchange).get("songId"));
+
+        repository.addToPlaylist(playlistId, songId);
+
+        logger.Console("Add song #{%d} to playlist #{%d}".formatted(songId, playlistId));
+
+        sendOk(exchange, Map.of("playlistId", playlistId, "songId", songId));
     }
 }

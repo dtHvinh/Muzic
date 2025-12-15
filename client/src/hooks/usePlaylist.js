@@ -1,83 +1,115 @@
 import { useState } from "react";
-import { toast } from 'sonner';
-import { api } from '../constants/api-client';
+import { toast } from "sonner";
+import { api } from "../constants/api-client";
 
 export default function usePlaylist() {
-    const [isLoading, setIsLoading] = useState(false);
-    const [isError, setIsError] = useState(false);
-    const [error, setError] = useState(null);
-    const [isSuccess, setIsSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [error, setError] = useState(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
-    const createPlaylist = async (inputData) => {
-        setIsLoading(true);
-        setIsError(false);
-        setError(null);
-        setIsSuccess(false);
+  const createPlaylist = async (inputData) => {
+    setIsLoading(true);
+    setIsError(false);
+    setError(null);
+    setIsSuccess(false);
 
-        try {
-            const response = await api.post("/playlists", inputData);
+    try {
+      const response = await api.post("/playlists", inputData);
 
-            setIsSuccess(true);
-            toast.success("Playlist created successfully!");
+      setIsSuccess(true);
+      toast.success("Playlist created successfully!");
 
-            return response;
-        } catch (err) {
-            const message =
-                err.response?.data?.message ||
-                err.message ||
-                "Failed to create playlist";
+      return response;
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to create playlist";
 
-            setError(message);
-            setIsError(true);
-            toast.error(message);
-            console.error("Create playlist error:", err);
+      setError(message);
+      setIsError(true);
+      toast.error(message);
+      console.error("Create playlist error:", err);
 
-            return null;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      return null;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const deletePlaylist = async (playlistId) => {
-        if (!playlistId) {
-            toast.error("Invalid playlist ID");
-            return false;
-        }
+  const deletePlaylist = async (playlistId) => {
+    if (!playlistId) {
+      toast.error("Invalid playlist ID");
+      return false;
+    }
 
-        setIsLoading(true);
-        setIsError(false);
-        setError(null);
+    setIsLoading(true);
+    setIsError(false);
+    setError(null);
 
-        try {
-            await api.del(`/playlists?id=${playlistId}`);
+    try {
+      await api.del(`/playlists?id=${playlistId}`);
 
-            setIsSuccess(true);
-            toast.success("Playlist deleted successfully");
+      setIsSuccess(true);
+      toast.success("Playlist deleted successfully");
 
-            return true;
-        } catch (err) {
-            const message =
-                err.response?.data?.message ||
-                err.message ||
-                "Failed to delete playlist";
+      return true;
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to delete playlist";
 
-            setError(message);
-            setIsError(true);
-            toast.error(message);
-            console.error("Delete playlist error:", err);
+      setError(message);
+      setIsError(true);
+      toast.error(message);
+      console.error("Delete playlist error:", err);
 
-            return false;
-        } finally {
-            setIsLoading(false);
-        }
-    };
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return {
-        createPlaylist,
-        deletePlaylist,
-        isLoading,
-        isError,
-        error,
-        isSuccess,
-    };
+  const addPlaylistItem = async (playlistId, songId) => {
+    if (!playlistId || !songId) {
+      toast.error("Invalid playlist ID or song ID");
+      return false;
+    }
+    setIsLoading(true);
+    setIsError(false);
+    setError(null);
+
+    try {
+      await api.post(
+        `/playlists?mode=add-song&playlistId=${playlistId}&songId=${songId}`
+      );
+      setIsSuccess(true);
+      toast.success("Song added to playlist successfully");
+      return true;
+    } catch (err) {
+      const message =
+        err.response?.data?.message ||
+        err.message ||
+        "Failed to add song to playlist";
+      setError(message);
+      setIsError(true);
+      toast.error(message);
+      console.error("Add playlist item error:", err);
+      return false;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return {
+    createPlaylist,
+    deletePlaylist,
+    addPlaylistItem,
+    isLoading,
+    isError,
+    error,
+    isSuccess,
+  };
 }

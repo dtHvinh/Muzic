@@ -4,7 +4,7 @@ import { api } from "../constants/api-client";
 /**
  * @returns {{ artists: Artist[], isLoading: boolean }}
  */
-export const useSearchArtist = ({ query = "a", offset = 0, limit = 20 }) => {
+export const useSearchArtist = ({ query, offset = 0, limit = 20 }) => {
   const [artists, setArtists] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +18,7 @@ export const useSearchArtist = ({ query = "a", offset = 0, limit = 20 }) => {
       try {
         setIsLoading(true);
         setError("");
-        const normalizedQuery = query?.trim()?.length ? query.trim() : "a";
+        const normalizedQuery = query?.trim()?.length ? query.trim() : "";
         const params = new URLSearchParams({
           query: normalizedQuery,
           offset: String(offset ?? 0),
