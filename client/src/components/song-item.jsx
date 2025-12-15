@@ -1,10 +1,6 @@
 "use client";
 
-<<<<<<< HEAD
 import { Music, Pause, Play, Trash2 } from "lucide-react";
-=======
-import { Music, Pause, Play } from "lucide-react";
->>>>>>> b7c77999263b8252ba3eb7e74255cfb2aa914c58
 import React from "react";
 
 function formatTime(seconds) {
@@ -19,20 +15,14 @@ export default function SongItem({
   isActive,
   onPlayRequest,
   onPauseRequest,
-<<<<<<< HEAD
   onDelete,
-=======
->>>>>>> b7c77999263b8252ba3eb7e74255cfb2aa914c58
 }) {
   const audioRef = React.useRef(null);
 
   const [isPlaying, setIsPlaying] = React.useState(false);
   const [duration, setDuration] = React.useState(0);
   const [currentTime, setCurrentTime] = React.useState(0);
-<<<<<<< HEAD
   const [isDeleting, setIsDeleting] = React.useState(false);
-=======
->>>>>>> b7c77999263b8252ba3eb7e74255cfb2aa914c58
 
   React.useEffect(() => {
     if (!isActive && audioRef.current) {
@@ -59,7 +49,6 @@ export default function SongItem({
     onPlayRequest?.(el, song.id);
   };
 
-<<<<<<< HEAD
   const handleDelete = async (e) => {
     e?.stopPropagation?.();
     if (!onDelete || isDeleting) return;
@@ -75,8 +64,6 @@ export default function SongItem({
     }
   };
 
-=======
->>>>>>> b7c77999263b8252ba3eb7e74255cfb2aa914c58
   return (
     <li className="group relative overflow-hidden rounded-2xl h-44 bg-linear-to-br from-secondary/40 to-secondary/20 backdrop-blur-sm border border-white/5 transition-all duration-300 hover:border-white/10 hover:shadow-lg">
       <div className="p-5">
@@ -99,7 +86,6 @@ export default function SongItem({
             </p>
           </div>
 
-<<<<<<< HEAD
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -132,21 +118,6 @@ export default function SongItem({
               </button>
             )}
           </div>
-=======
-          <button
-            type="button"
-            onClick={togglePlay}
-            disabled={!hasAudio}
-            className="relative shrink-0 inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary! text-primary-foreground shadow-lg transition-all duration-200 hover:scale-110 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:scale-100"
-            aria-label={isPlaying ? "Pause" : "Play"}
-          >
-            {isPlaying ? (
-              <Pause className="h-12 w-12 fill-current" />
-            ) : (
-              <Play className="h-12 w-12 fill-current ml-0.5" />
-            )}
-          </button>
->>>>>>> b7c77999263b8252ba3eb7e74255cfb2aa914c58
         </div>
 
         {hasAudio ? (
