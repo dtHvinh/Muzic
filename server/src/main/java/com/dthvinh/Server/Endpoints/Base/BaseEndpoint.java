@@ -86,6 +86,10 @@ public abstract class BaseEndpoint implements HttpHandler {
         }
     }
 
+    public String getQuery(HttpExchange exchange, String key){
+        return parseQueryParams(exchange).getOrDefault(key, null);
+    }
+
     public Verb getVerb(HttpExchange ex) {
         return Verb.valueOf(ex.getRequestMethod().toUpperCase());
     }

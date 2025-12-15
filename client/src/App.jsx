@@ -5,8 +5,8 @@ import { useRoutingContext } from "./hooks/useRoutingContext";
 import Artist from "./pages/artist";
 import ArtistEdit from "./pages/artist-edit";
 import Home from "./pages/home";
-import Liked from "./pages/liked";
 import PlayList from "./pages/playlist";
+import PlaylistDetails from "./pages/playlist-detail";
 import Search from "./pages/search";
 import Songs from "./pages/songs";
 import "./types/musicbrainz.d.js";
@@ -22,8 +22,7 @@ function App() {
     mapRoute("search", <Search />);
 
     mapRoute("playlist", <PlayList />);
-
-    mapRoute("liked", <Liked />);
+    mapRoute("playlist/details", <PlaylistDetails />);
 
     mapRoute("artist", <Artist />);
     mapRoute("artist/edit", <ArtistEdit />);

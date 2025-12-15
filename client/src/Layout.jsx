@@ -9,7 +9,7 @@ export default function Layout({ children }) {
         <main className="flex-1 overflow-y-auto bg-background">
           <SearchBar />
 
-          <div className="space-y-8 px-6 pb-32">
+          <div className="space-y-8 px-6 pb-32 flex justify-center">
             {children}
           </div>
         </main>

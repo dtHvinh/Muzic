@@ -9,6 +9,7 @@ import com.dthvinh.Server.DTOs.CreateSongDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
 import com.dthvinh.Server.DTOs.UpdateSongDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
+import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Models.Song;
 import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.Repositories.SongRepository;
@@ -61,7 +62,7 @@ public class SongEndpoint extends BaseEndpoint {
                 .stream()
                 .map(s -> {
                     String artistName = artists.findById(s.getArtistId())
-                            .map(a -> a.getName())
+                            .map(Artist::getName)
                             .orElse(null);
                     return SongResponseDto.from(s, artistName);
                 })

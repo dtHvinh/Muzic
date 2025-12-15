@@ -70,7 +70,7 @@ export default function ArtistCard({
         {artist.name}
       </h3>
       <p className="text-xs text-muted-foreground">
-        {artist.genre || "Artist"} • {artist.followers || "—"} followers
+        {artist.genre || "Artist"}
       </p>
     </div>
   );

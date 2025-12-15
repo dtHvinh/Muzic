@@ -21,7 +21,7 @@ export default function AddSongModal({ open, onClose }) {
   } = useMediaUpload();
 
   const { createSong, isLoading } = useSong();
-  const { fireAllEvents } = useAddSongModal();
+  const { fireOnSuccess } = useAddSongModal();
 
   const handleClose = () => {
     onClose?.();
@@ -54,7 +54,7 @@ export default function AddSongModal({ open, onClose }) {
     }
     const res = await createSong(payload);
     if (res) {
-      fireAllEvents();
+      fireOnSuccess();
       handleClose();
     }
   };

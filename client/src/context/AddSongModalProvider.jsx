@@ -1,21 +1,20 @@
 import React from "react";
-import { AddSongModalContext } from "./AddSongModalContext";
 import AddSongModal from "../components/add-song-modal";
 import { useRoutingContext } from "../hooks/useRoutingContext";
+import { AddSongModalContext } from "./AddSongModalContext";
 
 export function AddSongModalProvider({ children }) {
   const { currentRoute } = useRoutingContext();
   const [open, setOpen] = React.useState(false);
-  const [events, setEvents] = React.useState([]);
+  const onSuccessRef = React.useRef(null);
 
-  const registerEvent = React.useCallback((cb) => {
-    setEvents((prev) => [...prev, cb]);
-  }, []);
+  const fireOnSuccess = () => {
+    onSuccessRef.current?.();
+  };
 
-  const fireAllEvents = React.useCallback(() => {
-    events.forEach((cb) => cb());
-    setEvents([]);
-  }, [events]);
+  const setCallback = (fn) => {
+    onSuccessRef.current = fn;
+  }
 
   React.useEffect(() => {
     if (currentRoute !== "song" && open) setOpen(false);
@@ -27,8 +26,8 @@ export function AddSongModalProvider({ children }) {
         isAddSongModalOpen: open,
         openAddSongModal: () => setOpen(true),
         closeAddSongModal: () => setOpen(false),
-        registerEvent,
-        fireAllEvents,
+        fireOnSuccess,
+        setCallback,
       }}
     >
       {children}

@@ -5,22 +5,20 @@ import { useRoutingContext } from "../hooks/useRoutingContext";
 
 export default function AddSongButton({ onAdd }) {
   const { currentRoute } = useRoutingContext();
-  const { openAddSongModal, registerEvent } = useAddSongModal();
+  const { openAddSongModal, setCallback } = useAddSongModal();
 
   useEffect(() => {
-    if (!onAdd) return;
-    const event = () => onAdd();
-    registerEvent(event);
-  }, [onAdd, registerEvent]);
+    setCallback(onAdd);
+  }, []);
 
   if (currentRoute !== "song") return null;
 
   return (
     <button
-      className="flex h-9 items-center gap-2 text-primary bg-transparent!"
+      className="flex h-9 items-center gap-2"
       onClick={openAddSongModal}
     >
-      <Plus /> Add Song
+      <Plus /> New Song
     </button>
   );
 }

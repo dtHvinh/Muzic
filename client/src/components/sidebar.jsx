@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  AudioLines,
-  Heart,
-  Home,
+  AudioLines, Home,
   ListMusic,
   Music,
   Music2,
-  Search,
+  Search
 } from "lucide-react";
 import { useState } from "react";
 import Link from "../components/core/link";
@@ -22,7 +20,6 @@ const menuItems2 = [
   { icon: AudioLines, href: "song", label: "Songs" },
   { icon: ListMusic, href: "playlist", label: "Playlist" },
   { icon: Music, href: "artist", label: "Artists" },
-  { icon: Heart, href: "liked", label: "Liked Songs" },
 ];
 
 export default function Sidebar() {

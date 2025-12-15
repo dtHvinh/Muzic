@@ -12,7 +12,7 @@ export default function AddArtistModal({ open, onClose }) {
   });
 
   const { createArtist, isLoading } = useArtist();
-  const { fireAllEvents } = useAddArtistModal();
+  const { fireOnSuccess } = useAddArtistModal();
 
   const handleClose = () => {
     onClose?.();
@@ -32,7 +32,7 @@ export default function AddArtistModal({ open, onClose }) {
     const created = await createArtist(artist);
     if (created) {
       handleClose();
-      fireAllEvents();
+      fireOnSuccess();
     }
   };
 

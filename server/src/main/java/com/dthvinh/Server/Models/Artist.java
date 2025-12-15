@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class Artist {
+public final class Artist {
     private Long id;
     private String name;
     private String bio;

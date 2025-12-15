@@ -13,6 +13,7 @@ public class DatabaseService {
     public static void initDb() {
         createArtistTable();
         createSongTable();
+        createPlaylistTables();
     }
 
     private static void createArtistTable() {
@@ -50,6 +51,31 @@ public class DatabaseService {
                 """;
 
         execute(sql, "Failed to create song table");
+    }
+
+    private static void createPlaylistTables() {
+        String playlistSql = """
+        CREATE TABLE IF NOT EXISTS playlist (
+            id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+            name VARCHAR(255) NOT NULL,
+            description TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """;
+
+        String playlistSongSql = """
+        CREATE TABLE IF NOT EXISTS playlist_song (
+            playlist_id BIGINT NOT NULL REFERENCES playlist(id) ON DELETE CASCADE,
+            song_id BIGINT NOT NULL REFERENCES song(id) ON DELETE CASCADE,
+            PRIMARY KEY (playlist_id, song_id)
+        )
+        """;
+
+        String indexSql = "CREATE INDEX IF NOT EXISTS idx_playlist_song_playlist ON playlist_song(playlist_id)";
+
+        execute(playlistSql, "Failed to create playlist table");
+        execute(playlistSongSql, "Failed to create playlist_song table");
+        execute(indexSql, "Failed to create index");
     }
 
     private static void execute(String sql, String errorMessage) {
