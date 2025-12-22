@@ -3,7 +3,8 @@ package com.dthvinh.Server.Repositories;
 
 import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Repositories.Contract.Repository;
-import com.dthvinh.Server.Service.DatabaseService;
+import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+import lombok.AllArgsConstructor;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,17 +14,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 public class ArtistRepository implements Repository<Artist, Long> {
-    private static ArtistRepository instance;
+    private final DatabaseService databaseService;
 
-    public static ArtistRepository getInstance() {
-        if (instance == null)
-            instance = new ArtistRepository();
-
-        return instance;
-    }
-
-    private static Artist map(ResultSet rs) throws SQLException {
+    public static Artist map(ResultSet rs) throws SQLException {
         return new Artist(
                 rs.getLong("id"),
                 rs.getString("name"),
@@ -42,8 +37,8 @@ public class ArtistRepository implements Repository<Artist, Long> {
                 RETURNING *
                 """;
 
-        try (var t = DatabaseService.startTransaction();
-             PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, a.getName());
             ps.setString(2, a.getBio());
@@ -55,8 +50,6 @@ public class ArtistRepository implements Repository<Artist, Long> {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Save failed", e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -82,8 +75,8 @@ public class ArtistRepository implements Repository<Artist, Long> {
             params.add(offset);
         }
 
-        try (var t = DatabaseService.startTransaction();
-             PreparedStatement ps = t.connection.prepareStatement(sql.toString())) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
@@ -94,8 +87,6 @@ public class ArtistRepository implements Repository<Artist, Long> {
             }
         } catch (SQLException e) {
             throw new RuntimeException("findAll failed: " + e.getMessage(), e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
         return list;
@@ -104,8 +95,8 @@ public class ArtistRepository implements Repository<Artist, Long> {
     public Optional<Artist> findById(Long id) {
         String sql = "SELECT * FROM artist WHERE id = ?";
 
-        try (var t = DatabaseService.startTransaction();
-             PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -124,8 +115,8 @@ public class ArtistRepository implements Repository<Artist, Long> {
                 WHERE id = ? RETURNING *
                 """;
 
-        try (var t = DatabaseService.startTransaction();
-             PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, a.getName());
             ps.setString(2, a.getBio());
@@ -143,8 +134,8 @@ public class ArtistRepository implements Repository<Artist, Long> {
 
     public boolean delete(Long id) {
         String sql = "DELETE FROM artist WHERE id = ?";
-        try (var t = DatabaseService.startTransaction();
-             PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;

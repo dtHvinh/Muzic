@@ -1,10 +1,5 @@
 package com.dthvinh.Server.Endpoints;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 import com.dthvinh.Server.DTOs.CreatePlaylistDto;
 import com.dthvinh.Server.DTOs.PlaylistResponseDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
@@ -14,10 +9,17 @@ import com.dthvinh.Server.Models.Playlist;
 import com.dthvinh.Server.Repositories.PlaylistRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
+import lombok.AllArgsConstructor;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+@AllArgsConstructor
 @Endpoint(route = "playlists")
 public class PlaylistEndpoint extends BaseEndpoint {
-    private final PlaylistRepository repository = PlaylistRepository.getInstance();
+    private final PlaylistRepository repository;
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -104,7 +106,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
                 return;
             }
 
-            sendOk(exchange, playlist);
+            sendOk(exchange, PlaylistResponseDto.from(playlist));
             return;
         }
 
@@ -116,7 +118,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
                 .map(PlaylistResponseDto::from)
                 .toList();
 
-        logger.Console("There is {%d} artist match query \"%s\"".formatted(playlists.size(), params.get("name")));
+        logger.Info("There is {%d} artist match query \"%s\"".formatted(playlists.size(), params.get("name")));
 
         sendOk(exchange, Map.of("playlists", playlists));
     }
@@ -145,13 +147,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
 
         List<SongResponseDto> songs = repository.findSongsByPlaylistId(playlistId)
                 .stream()
-                .map(s -> new SongResponseDto(
-                        s.songId(),
-                        s.songTitle(),
-                        s.artistId(),
-                        s.artistName(),
-                        s.spotifyId(),
-                        s.audioUrl()))
+                .map(SongResponseDto::from)
                 .toList();
 
         sendOk(exchange, Map.of("songs", songs));
@@ -160,8 +156,13 @@ public class PlaylistEndpoint extends BaseEndpoint {
     private void handleCreatePlaylist(HttpExchange exchange) throws IOException {
         Map<String, String> params = parseQueryParams(exchange);
 
-        if (params.get("mode").equalsIgnoreCase("add-song")) {
+        if (params.getOrDefault("mode", "").equalsIgnoreCase("add-song")) {
             handleAddSong(exchange);
+            return;
+        }
+
+        if (params.getOrDefault("mode", "").equalsIgnoreCase("remove-song")) {
+            handleRemoveSong(exchange);
             return;
         }
 
@@ -177,11 +178,22 @@ public class PlaylistEndpoint extends BaseEndpoint {
         try {
             created = repository.save(new Playlist(dto.name(), dto.description()));
         } catch (Exception e) {
-            sendBadRequest(exchange, "Failed to create song");
+            sendBadRequest(exchange, "Failed to create playlist");
             return;
         }
 
         sendOk(exchange, Map.of("id", created.getId()));
+    }
+
+    private void handleRemoveSong(HttpExchange exchange) throws IOException {
+        Long playlistId = Long.valueOf(parseQueryParams(exchange).get("playlistId"));
+        Long songId = Long.valueOf(parseQueryParams(exchange).get("songId"));
+
+        repository.deleteFromPlaylist(playlistId, songId);
+
+        logger.Info("Remove song #{%d} from playlist #{%d}".formatted(songId, playlistId));
+
+        sendOk(exchange, Map.of("playlistId", playlistId, "songId", songId));
     }
 
     private void handleAddSong(HttpExchange exchange) throws IOException {
@@ -190,7 +202,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
 
         repository.addToPlaylist(playlistId, songId);
 
-        logger.Console("Add song #{%d} to playlist #{%d}".formatted(songId, playlistId));
+        logger.Info("Add song #{%d} to playlist #{%d}".formatted(songId, playlistId));
 
         sendOk(exchange, Map.of("playlistId", playlistId, "songId", songId));
     }

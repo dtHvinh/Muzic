@@ -1,41 +1,56 @@
 package com.dthvinh.Server.SummerBoot.Reflection;
 
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
+import com.dthvinh.Server.SummerBoot.DI.ServiceContainer;
 import com.dthvinh.Server.SummerBoot.Security.Cors;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Set;
 import org.reflections.Reflections;
+
+import java.util.Set;
 
 public class EndpointService {
 
-    public static void registerEndpoints(HttpServer server)
-            throws NoSuchMethodException, InvocationTargetException,
-            InstantiationException, IllegalAccessException {
+    private final ServiceContainer container;
 
-        Reflections reflections = new Reflections("com.dthvinh.Server.Endpoints");
-        Set<Class<?>> types = reflections.getTypesAnnotatedWith(Endpoint.class);
+    public EndpointService(ServiceContainer container) {
+        this.container = container;
+    }
+
+    public void registerEndpoints(HttpServer server) {
+        
+        Reflections reflections =
+                new Reflections("com.dthvinh.Server.Endpoints");
+
+        Set<Class<?>> types =
+                reflections.getTypesAnnotatedWith(Endpoint.class);
 
         for (Class<?> clazz : types) {
-            if (HttpHandler.class.isAssignableFrom(clazz)) {
-                Endpoint ep = clazz.getAnnotation(Endpoint.class);
-                String route = ep.route();
 
-                if (route.isEmpty()) {
-                    route = "/" + clazz.getSimpleName()
-                            .toLowerCase()
-                            .replace("endpoint", "")
-                            .replace("handler", "");
-                }
-
-                route = ("/" + route).replaceAll("//+", "/");
-
-                HttpHandler handler = (HttpHandler) clazz.getDeclaredConstructor().newInstance();
-                server.createContext(route, Cors.withCors(handler));
-
-                System.out.println("Registered: " + route + " → " + clazz.getSimpleName());
+            if (!HttpHandler.class.isAssignableFrom(clazz)) {
+                continue;
             }
+
+            Endpoint ep = clazz.getAnnotation(Endpoint.class);
+            String route = ep.route();
+
+            if (route.isEmpty()) {
+                route = "/" + clazz.getSimpleName()
+                        .toLowerCase()
+                        .replace("endpoint", "")
+                        .replace("handler", "");
+            }
+
+            route = ("/" + route).replaceAll("//+", "/");
+
+            HttpHandler handler = (HttpHandler) container.injectThenNewInstance(clazz);
+
+            server.createContext(route, Cors.withCors(handler));
+
+            System.out.println(
+                    "Registered: " + route + " → " + clazz.getSimpleName()
+            );
         }
     }
 }
+

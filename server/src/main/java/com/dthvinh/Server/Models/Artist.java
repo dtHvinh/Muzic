@@ -1,5 +1,7 @@
 package com.dthvinh.Server.Models;
 
+import com.dthvinh.Server.DTOs.CreateArtistDto;
+import com.dthvinh.Server.DTOs.UpdateArtistDto;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -34,5 +36,26 @@ public final class Artist {
 
     public Artist(String name, String bio, String profileImage, String spotifyId) {
         this(null, name, bio, profileImage, spotifyId, null, null);
+    }
+
+    public static Artist from(CreateArtistDto dto) {
+        return new Artist(null,
+                dto.name(),
+                dto.bio(),
+                dto.profileImage(),
+                dto.spotifyId(),
+                null,
+                null);
+    }
+
+    public Artist from(UpdateArtistDto other) {
+        return new Artist(
+                getId(),
+                other.name() != null ? other.name() : getName(),
+                other.bio() != null ? other.bio() : getBio(),
+                other.profileImage() != null ? other.profileImage() : getProfileImage(),
+                other.spotifyId() != null ? other.spotifyId() : getSpotifyId(),
+                getCreatedAt(),
+                LocalDateTime.now());
     }
 }

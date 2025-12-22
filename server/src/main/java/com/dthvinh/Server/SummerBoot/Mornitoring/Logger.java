@@ -4,13 +4,13 @@ public class Logger {
     private static Logger instance;
 
     public static Logger getInstance() {
-        if(instance == null)
+        if (instance == null)
             instance = new Logger();
 
         return instance;
     }
 
-    public void Console(String message) {
+    public void Info(String message) {
         System.out.println(message);
     }
 }

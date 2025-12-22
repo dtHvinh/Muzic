@@ -1,13 +1,5 @@
 package com.dthvinh.Server.Endpoints.Base;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.dthvinh.Server.SummerBoot.Mornitoring.Logger;
 import com.dthvinh.Server.Utils.ResponseUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -17,22 +9,27 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  *
  * @author dthvinh
  */
 public abstract class BaseEndpoint implements HttpHandler {
-
+    protected Logger logger = Logger.getInstance();
     protected ObjectMapper mapper = new ObjectMapper()
             .findAndRegisterModules()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
     protected ObjectWriter writer = new ObjectMapper()
             .findAndRegisterModules()
             .writer()
             .withDefaultPrettyPrinter();
-
-    protected Logger logger = Logger.getInstance();
 
     public void sendOk(HttpExchange ex, Object response) throws IOException {
         ResponseUtils.writeResponse(ex, 200, String.valueOf(writer.writeValueAsString(response)));
@@ -86,7 +83,7 @@ public abstract class BaseEndpoint implements HttpHandler {
         }
     }
 
-    public String getQuery(HttpExchange exchange, String key){
+    public String getQuery(HttpExchange exchange, String key) {
         return parseQueryParams(exchange).getOrDefault(key, null);
     }
 

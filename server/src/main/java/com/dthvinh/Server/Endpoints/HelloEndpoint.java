@@ -8,6 +8,7 @@ import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.dthvinh.Server.SummerBoot.Mornitoring.Logger;
 import com.sun.net.httpserver.HttpExchange;
+
 import java.io.IOException;
 
 /**
@@ -19,15 +20,15 @@ public class HelloEndpoint extends BaseEndpoint {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Logger.getInstance().Console("Hello endpoint");
+        Logger.getInstance().Info("Hello endpoint");
 
         String json = """
-            {
-                "message": "Hello from helloEndpoint",
-                "status": "ok",
-                "timestamp": "%s"
-            }
-            """.formatted(java.time.Instant.now());
+                {
+                    "message": "Hello from helloEndpoint",
+                    "status": "ok",
+                    "timestamp": "%s"
+                }
+                """.formatted(java.time.Instant.now());
 
         sendOk(exchange, json);
     }

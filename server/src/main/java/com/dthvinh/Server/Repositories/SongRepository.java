@@ -1,5 +1,10 @@
 package com.dthvinh.Server.Repositories;
 
+import com.dthvinh.Server.Models.Song;
+import com.dthvinh.Server.Repositories.Contract.Repository;
+import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+import lombok.AllArgsConstructor;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,18 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.dthvinh.Server.Models.Song;
-import com.dthvinh.Server.Repositories.Contract.Repository;
-import com.dthvinh.Server.Service.DatabaseService;
-
+@AllArgsConstructor
 public class SongRepository implements Repository<Song, Long> {
-    private static SongRepository instance;
-
-    public static SongRepository getInstance() {
-        if (instance == null)
-            instance = new SongRepository();
-        return instance;
-    }
+    private final DatabaseService databaseService;
 
     private Song map(ResultSet rs) throws SQLException {
         return new Song(
@@ -39,8 +35,8 @@ public class SongRepository implements Repository<Song, Long> {
                 VALUES (?, ?, ?, ?)
                 RETURNING *
                 """;
-        try (var t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, s.getTitle());
             ps.setLong(2, s.getArtistId());
             ps.setString(3, s.getSpotifyId());
@@ -74,8 +70,8 @@ public class SongRepository implements Repository<Song, Long> {
         }
 
         var list = new ArrayList<Song>();
-        try (var t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql.toString())) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
@@ -92,8 +88,8 @@ public class SongRepository implements Repository<Song, Long> {
     @Override
     public Optional<Song> findById(Long id) {
         String sql = "SELECT * FROM song WHERE id = ?";
-        try (var t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? Optional.of(map(rs)) : Optional.empty();
@@ -112,8 +108,8 @@ public class SongRepository implements Repository<Song, Long> {
                     updated_at = CURRENT_TIMESTAMP
                 WHERE id = ? RETURNING *
                 """;
-        try (var t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, s.getTitle());
             ps.setLong(2, s.getArtistId());
             ps.setString(3, s.getSpotifyId());
@@ -130,8 +126,8 @@ public class SongRepository implements Repository<Song, Long> {
     @Override
     public boolean delete(Long id) {
         String sql = "DELETE FROM song WHERE id = ?";
-        try (var t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
         } catch (Exception e) {

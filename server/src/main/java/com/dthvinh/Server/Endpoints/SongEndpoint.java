@@ -1,10 +1,5 @@
 package com.dthvinh.Server.Endpoints;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-
 import com.dthvinh.Server.DTOs.CreateSongDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
 import com.dthvinh.Server.DTOs.UpdateSongDto;
@@ -16,10 +11,19 @@ import com.dthvinh.Server.Repositories.SongRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 @Endpoint(route = "songs")
 public class SongEndpoint extends BaseEndpoint {
-    private final SongRepository songs = SongRepository.getInstance();
-    private final ArtistRepository artists = ArtistRepository.getInstance();
+    private final SongRepository songs;
+    private final ArtistRepository artists;
+
+    public SongEndpoint(SongRepository songs, ArtistRepository artists) {
+        this.songs = songs;
+        this.artists = artists;
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -39,19 +43,7 @@ public class SongEndpoint extends BaseEndpoint {
     private void handleGet(HttpExchange exchange) throws IOException {
         Map<String, String> params = parseQueryParams(exchange);
         if (params.containsKey("id")) {
-            var song = songs.findById(Long.valueOf(params.get("id")))
-                    .map(s -> {
-                        String artistName = artists.findById(s.getArtistId())
-                                .map(a -> a.getName())
-                                .orElse(null);
-                        return SongResponseDto.from(s, artistName);
-                    })
-                    .orElse(null);
-            if (song == null) {
-                sendNotFound(exchange);
-                return;
-            }
-            sendOk(exchange, song);
+            handleGetSongById(exchange);
             return;
         }
 
@@ -71,9 +63,27 @@ public class SongEndpoint extends BaseEndpoint {
         sendOk(exchange, Map.of("songs", list));
     }
 
+    private void handleGetSongById(HttpExchange exchange) throws IOException {
+        Map<String, String> params = parseQueryParams(exchange);
+        SongResponseDto song = songs.findById(Long.valueOf(params.get("id")))
+                .map(s -> {
+                    String artistName = artists.findById(s.getArtistId())
+                            .map(Artist::getName)
+                            .orElse(null);
+                    return SongResponseDto.from(s, artistName);
+                })
+                .orElse(null);
+        if (song == null) {
+            sendNotFound(exchange);
+            return;
+        }
+
+        sendOk(exchange, song);
+    }
+
     private void handleCreate(HttpExchange exchange) throws IOException {
         CreateSongDto dto = parseBody(exchange, CreateSongDto.class);
-        if (dto == null || dto.artistId() == null || dto.title() == null || dto.title().isBlank()) {
+        if (dto == null || !dto.validate().success) {
             sendBadRequest(exchange, "title and artist_id are required");
             return;
         }
@@ -109,16 +119,8 @@ public class SongEndpoint extends BaseEndpoint {
             return;
         }
 
-        Song updated = new Song(
-                current.getId(),
-                dto.title() != null && !dto.title().isBlank() ? dto.title().trim() : current.getTitle(),
-                dto.artistId() != null ? dto.artistId() : current.getArtistId(),
-                dto.spotifyId() != null && !dto.spotifyId().isBlank() ? dto.spotifyId().trim() : current.getSpotifyId(),
-                dto.audioUrl() != null && !dto.audioUrl().isBlank() ? dto.audioUrl().trim() : current.getAudioUrl(),
-                current.getCreatedAt(),
-                LocalDateTime.now());
+        Song saved = songs.update(id, current.with(dto));
 
-        Song saved = songs.update(id, updated);
         sendOk(exchange, SongResponseDto.from(saved));
     }
 

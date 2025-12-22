@@ -1,5 +1,6 @@
 package com.dthvinh.Server.DTOs;
 
+import com.dthvinh.Server.Models.PlaylistSongEntry;
 import com.dthvinh.Server.Models.Song;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,5 +30,15 @@ public record SongResponseDto(
                 artistName,
                 song.getSpotifyId(),
                 song.getAudioUrl());
+    }
+
+    public static SongResponseDto from(PlaylistSongEntry s) {
+        return new SongResponseDto(
+                s.songId(),
+                s.songTitle(),
+                s.artistId(),
+                s.artistName(),
+                s.spotifyId(),
+                s.audioUrl());
     }
 }

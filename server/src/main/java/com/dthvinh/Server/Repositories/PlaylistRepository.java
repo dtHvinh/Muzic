@@ -1,5 +1,11 @@
 package com.dthvinh.Server.Repositories;
 
+import com.dthvinh.Server.Models.Playlist;
+import com.dthvinh.Server.Models.PlaylistSongEntry;
+import com.dthvinh.Server.Repositories.Contract.Repository;
+import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+import lombok.AllArgsConstructor;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,19 +14,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.dthvinh.Server.Models.Playlist;
-import com.dthvinh.Server.Models.PlaylistSongEntry;
-import com.dthvinh.Server.Repositories.Contract.Repository;
-import com.dthvinh.Server.Service.DatabaseService;
-
+@AllArgsConstructor
 public class PlaylistRepository implements Repository<Playlist, Long> {
-    private static PlaylistRepository instance;
+    private final DatabaseService databaseService;
 
-    public static PlaylistRepository getInstance() {
-        if (instance == null)
-            instance = new PlaylistRepository();
-
-        return instance;
+    private static Playlist map(ResultSet rs) throws SQLException {
+        return new Playlist(
+                rs.getLong("id"),
+                rs.getString("name"),
+                rs.getString("description"),
+                rs.getObject("created_at", LocalDateTime.class));
     }
 
     @Override
@@ -31,8 +34,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
                 RETURNING id
                 """;
 
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, a.getName());
             ps.setString(2, a.getDescription());
@@ -45,8 +48,6 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to save playlist", e);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
         return null;
     }
@@ -82,8 +83,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
             params.add(limit);
         }
 
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql.toString())) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql.toString())) {
 
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
@@ -112,8 +113,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
                 WHERE id = ?
                 """;
 
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, id);
 
@@ -134,8 +135,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
                 RETURNING created_at
                 """;
 
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, a.getName());
             ps.setString(2, a.getDescription());
@@ -159,8 +160,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
     public boolean delete(Long id) {
         String sql = "DELETE FROM playlist WHERE id = ?";
 
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;
@@ -174,8 +175,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
     public void addToPlaylist(Long playlistId, Long songId) {
         String sql = "INSERT INTO playlist_song (playlist_id, song_id) VALUES (?, ?)";
 
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, playlistId);
             ps.setLong(2, songId);
@@ -186,6 +187,25 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
             throw new RuntimeException(
                     "Failed to add song " + songId + " to playlist " + playlistId,
                     e);
+        }
+    }
+
+    public void deleteFromPlaylist(Long playlistId, Long songId) {
+        String sql = "DELETE FROM playlist_song WHERE playlist_id = ? AND song_id = ?";
+
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+
+            ps.setLong(1, playlistId);
+            ps.setLong(2, songId);
+
+            ps.executeUpdate();
+
+        } catch (Exception e) {
+            throw new RuntimeException(
+                    "Failed to remove song " + songId + " from playlist " + playlistId,
+                    e
+            );
         }
     }
 
@@ -207,8 +227,8 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
                 """;
 
         List<PlaylistSongEntry> result = new ArrayList<>();
-        try (DatabaseService.Transaction t = DatabaseService.startTransaction();
-                PreparedStatement ps = t.connection.prepareStatement(sql)) {
+        try (var c = databaseService.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, playlistId);
 
@@ -229,13 +249,5 @@ public class PlaylistRepository implements Repository<Playlist, Long> {
         }
 
         return result;
-    }
-
-    private static Playlist map(ResultSet rs) throws SQLException {
-        return new Playlist(
-                rs.getLong("id"),
-                rs.getString("name"),
-                rs.getString("description"),
-                rs.getObject("created_at", LocalDateTime.class));
     }
 }

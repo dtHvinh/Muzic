@@ -1,11 +1,5 @@
 package com.dthvinh.Server.Endpoints;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
 import com.dthvinh.Server.DTOs.ArtistResponseDto;
 import com.dthvinh.Server.DTOs.CreateArtistDto;
 import com.dthvinh.Server.DTOs.UpdateArtistDto;
@@ -15,13 +9,22 @@ import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  *
  * @author dthvinh
  */
 @Endpoint(route = "artists")
 public class ArtistEndpoint extends BaseEndpoint {
-    private final ArtistRepository artistRepository = ArtistRepository.getInstance();
+    private final ArtistRepository artistRepository;
+
+    public ArtistEndpoint(ArtistRepository artistRepository) {
+        this.artistRepository = artistRepository;
+    }
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -62,22 +65,14 @@ public class ArtistEndpoint extends BaseEndpoint {
                 .map(ArtistResponseDto::from)
                 .toList();
 
-        logger.Console("There is {%d} artist match query \"%s\"".formatted(artists.size(), params.get("name")));
+        logger.Info("There is {%d} artist match query \"%s\"".formatted(artists.size(), params.get("name")));
 
         sendOk(exchange, Map.of("artists", artists));
     }
 
     private void handleCreateArtist(HttpExchange exchange) throws IOException {
         CreateArtistDto dto = parseBody(exchange, CreateArtistDto.class);
-
-        Artist artist = new Artist(null,
-                dto.name(),
-                dto.bio(),
-                dto.profileImage(),
-                dto.spotifyId(),
-                null,
-                null);
-        Artist created = artistRepository.save(artist);
+        Artist created = artistRepository.save(Artist.from(dto));
 
         sendOk(exchange, Map.of("id", created.getId()));
     }
@@ -110,16 +105,8 @@ public class ArtistEndpoint extends BaseEndpoint {
             return;
         }
 
-        Artist updated = new Artist(
-                current.getId(),
-                dto.name() != null ? dto.name() : current.getName(),
-                dto.bio() != null ? dto.bio() : current.getBio(),
-                dto.profileImage() != null ? dto.profileImage() : current.getProfileImage(),
-                dto.spotifyId() != null ? dto.spotifyId() : current.getSpotifyId(),
-                current.getCreatedAt(),
-                LocalDateTime.now());
+        Artist saved = artistRepository.update(id, current.from(dto));
 
-        Artist saved = artistRepository.update(id, updated);
         sendOk(exchange, ArtistResponseDto.from(saved));
     }
 }
