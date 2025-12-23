@@ -1,3 +1,0 @@
-artifactId=test
-groupId=com.dthvinh
-version=1.0-SNAPSHOT

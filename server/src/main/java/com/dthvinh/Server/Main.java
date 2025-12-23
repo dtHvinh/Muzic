@@ -31,10 +31,11 @@ public class Main {
     }
 
     private static void registerService(ServiceContainer sc) {
-        AppDataSource appDataSource = new AppDataSource(
-                "jdbc:postgresql://localhost:5432/muzicdb",
-                "postgres",
-                "0");
+        // AppDataSource appDataSource = new AppDataSource(
+        // "jdbc:postgresql://localhost:5432/muzicdb",
+        // "postgres",
+        // "0");
+        AppDataSource appDataSource = AppDataSource.fromEnv();
 
         DatabaseService databaseService = new DatabaseService(appDataSource);
         databaseService.initDb();

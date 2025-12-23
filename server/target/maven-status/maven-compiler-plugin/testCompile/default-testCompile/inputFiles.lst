@@ -1,0 +1,13 @@
+/home/dthvinh/dev/java/Muzic/server/src/test/java/RepositoryTests/ArtistRepositoryTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/SummerBootTests/DI/ServiceContainerTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/SummerBootTests/Types/ValidationResultTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/EndpointTests/ArtistEndpointTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/EndpointTests/BaseEndpointTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/EndpointTests/SongEndpointTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/SummerBootTests/Reflection/ClassReflectionHelperTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/EndpointTests/PlaylistEndpointTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/SummerBootTests/Security/CorsTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/SummerBootTests/Data/AppDataSourceTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/SummerBootTests/Data/DatabaseServiceTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/RepositoryTests/SongRepositoryTest.java
+/home/dthvinh/dev/java/Muzic/server/src/test/java/RepositoryTests/PlaylistRepositoryTest.java

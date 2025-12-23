@@ -1,0 +1,2 @@
+docker run -d --name muzic-postgres -e POSTGRES_DB=muzicdb -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=0 -p 5432:5432 -v postgres_data:/var/lib/postgresql/data postgres:16-alpine
+docker run -d --name muzic-server -p 8080:8080 -e DB_HOST=42.96.16.144 -e DB_PORT=5432 -e DB_NAME=muzicdb -e DB_USER=postgres -e DB_PASS=0 hienvinh/mz-sv:0.0.1

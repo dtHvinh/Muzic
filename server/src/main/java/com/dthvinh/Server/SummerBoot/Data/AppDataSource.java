@@ -1,9 +1,10 @@
 package com.dthvinh.Server.SummerBoot.Data;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 public class AppDataSource implements DataSource {
 
@@ -15,6 +16,18 @@ public class AppDataSource implements DataSource {
         this.url = url;
         this.user = user;
         this.pass = pass;
+    }
+
+    public static AppDataSource fromEnv() {
+        String host = System.getenv("DB_HOST");
+        String port = System.getenv("DB_PORT");
+        String dbName = System.getenv("DB_NAME");
+        String user = System.getenv("DB_USER");
+        String pass = System.getenv("DB_PASS");
+
+        String url = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
+
+        return new AppDataSource(url, user, pass);
     }
 
     @Override
