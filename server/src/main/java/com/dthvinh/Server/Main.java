@@ -13,7 +13,7 @@ import com.sun.net.httpserver.HttpServer;
 
 public class Main {
 
-    private static final int PORT = 8080;
+    private static final int PORT = 8088;
 
     public static void main(String[] args) throws Exception {
         HttpServer server = HttpServer.create(new InetSocketAddress(PORT), 0);
@@ -31,11 +31,11 @@ public class Main {
     }
 
     private static void registerService(ServiceContainer sc) {
-        // AppDataSource appDataSource = new AppDataSource(
-        // "jdbc:postgresql://localhost:5432/muzicdb",
-        // "postgres",
-        // "0");
-        AppDataSource appDataSource = AppDataSource.fromEnv();
+        AppDataSource appDataSource = new AppDataSource(
+                "jdbc:postgresql://localhost:5433/muzicdb",
+                "postgres",
+                "0");
+        // AppDataSource appDataSource = AppDataSource.fromEnv();
 
         DatabaseService databaseService = new DatabaseService(appDataSource);
         databaseService.initDb();

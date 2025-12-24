@@ -1,0 +1,11 @@
+kubectl create namespace mzsv
+kubectl apply -f postgres-secret.yaml
+kubectl apply -f postgres-pvc.yaml
+kubectl apply -f postgres.yaml
+kubectl apply -f muzic.yaml
+
+kubectl delete -f muzic.yaml &&
+kubectl delete -f postgres.yaml &&
+kubectl delete -f postgres-pvc.yaml &&
+kubectl delete -f postgres-secret.yaml &&
+

@@ -1,11 +1,5 @@
 package com.dthvinh.Server.Repositories;
 
-
-import com.dthvinh.Server.Models.Artist;
-import com.dthvinh.Server.Repositories.Contract.Repository;
-import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
-import lombok.AllArgsConstructor;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +7,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.dthvinh.Server.Models.Artist;
+import com.dthvinh.Server.Repositories.Contract.Repository;
+import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class ArtistRepository implements Repository<Artist, Long> {
@@ -26,8 +26,7 @@ public class ArtistRepository implements Repository<Artist, Long> {
                 rs.getString("profile_image"),
                 rs.getString("spotify_id"),
                 rs.getObject("created_at", LocalDateTime.class),
-                rs.getObject("updated_at", LocalDateTime.class)
-        );
+                rs.getObject("updated_at", LocalDateTime.class));
     }
 
     public Artist save(Artist a) {
@@ -38,7 +37,7 @@ public class ArtistRepository implements Repository<Artist, Long> {
                 """;
 
         try (var c = databaseService.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, a.getName());
             ps.setString(2, a.getBio());
@@ -76,7 +75,7 @@ public class ArtistRepository implements Repository<Artist, Long> {
         }
 
         try (var c = databaseService.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql.toString())) {
+                PreparedStatement ps = c.prepareStatement(sql.toString())) {
             for (int i = 0; i < params.size(); i++) {
                 ps.setObject(i + 1, params.get(i));
             }
@@ -96,7 +95,7 @@ public class ArtistRepository implements Repository<Artist, Long> {
         String sql = "SELECT * FROM artist WHERE id = ?";
 
         try (var c = databaseService.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             try (ResultSet rs = ps.executeQuery()) {
@@ -116,7 +115,7 @@ public class ArtistRepository implements Repository<Artist, Long> {
                 """;
 
         try (var c = databaseService.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setString(1, a.getName());
             ps.setString(2, a.getBio());
@@ -135,7 +134,7 @@ public class ArtistRepository implements Repository<Artist, Long> {
     public boolean delete(Long id) {
         String sql = "DELETE FROM artist WHERE id = ?";
         try (var c = databaseService.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
+                PreparedStatement ps = c.prepareStatement(sql)) {
 
             ps.setLong(1, id);
             return ps.executeUpdate() > 0;

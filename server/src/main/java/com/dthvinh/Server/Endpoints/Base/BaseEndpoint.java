@@ -1,5 +1,13 @@
 package com.dthvinh.Server.Endpoints.Base;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import com.dthvinh.Server.SummerBoot.Mornitoring.Logger;
 import com.dthvinh.Server.Utils.ResponseUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -8,14 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  *
@@ -77,7 +77,8 @@ public abstract class BaseEndpoint implements HttpHandler {
 
     public <T> T parseBody(HttpExchange exchange, Class<T> clazz) throws IOException {
         try (var in = exchange.getRequestBody()) {
-            return mapper.readValue(in, clazz);
+            String body = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+            return mapper.readValue(body, clazz);
         } catch (Exception ex) {
             return null;
         }

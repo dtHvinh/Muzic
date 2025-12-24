@@ -13,6 +13,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <exec.mainClass>com.dthvinh.Server.Main</exec.mainClass>
     </properties>
+    
     <build>
     <plugins>
         <plugin>
