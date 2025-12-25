@@ -1,10 +1,18 @@
 package com.dthvinh.Server.SummerBoot.Filters;
 
+import java.io.IOException;
+import java.util.Map;
+
+import com.dthvinh.Server.Utils.ResponseUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.sun.net.httpserver.HttpExchange;
 
-import java.io.IOException;
-
 public class GlobalErrorHandler extends BaseFilter {
+    protected ObjectWriter writer = new ObjectMapper()
+            .findAndRegisterModules()
+            .writer()
+            .withDefaultPrettyPrinter();
 
     @Override
     public void doFilter(HttpExchange exchange, Chain chain)
@@ -12,7 +20,9 @@ public class GlobalErrorHandler extends BaseFilter {
         try {
             chain.doFilter(exchange);
         } catch (Exception e) {
-            exchange.sendResponseHeaders(500, 0);
+            ResponseUtils.writeResponse(exchange, 500, String.valueOf(writer.writeValueAsString(Map.of(
+                    "error", "Internal Server Error",
+                    "message", e.getMessage()))));
             exchange.close();
         }
     }

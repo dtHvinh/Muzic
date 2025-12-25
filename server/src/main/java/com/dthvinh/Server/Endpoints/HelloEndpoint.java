@@ -4,12 +4,12 @@
  */
 package com.dthvinh.Server.Endpoints;
 
+import java.io.IOException;
+import java.util.Map;
+
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
-import com.dthvinh.Server.SummerBoot.Mornitoring.Logger;
 import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
 
 /**
  *
@@ -20,16 +20,17 @@ public class HelloEndpoint extends BaseEndpoint {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Logger.getInstance().Info("Hello endpoint");
+        Map<String, String> queryParams = parseQueryParams(exchange);
 
-        String json = """
-                {
-                    "message": "Hello from helloEndpoint",
-                    "status": "ok",
-                    "timestamp": "%s"
-                }
-                """.formatted(java.time.Instant.now());
-
-        sendOk(exchange, json);
+        logger.Info("Hello endpoint");
+        if (queryParams.get("mode") != null && queryParams.get("mode").equals("test")) {
+            logger.Info("Test mode activated");
+            sendOk(exchange, Map.of("status", "success", "data", "This is a test response"));
+            return;
+        } else if (queryParams.get("mode") != null && queryParams.get("mode").equals("exception")) {
+            logger.Info("Exception mode activated");
+            throw new IOException("Test exception from HelloEndpoint");
+        }
+        sendOk(exchange, Map.of("message", "Hello, World!"));
     }
 }

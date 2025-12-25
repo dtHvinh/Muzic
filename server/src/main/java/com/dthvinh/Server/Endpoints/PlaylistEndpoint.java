@@ -124,7 +124,6 @@ public class PlaylistEndpoint extends BaseEndpoint {
         sendOk(exchange, Map.of("playlists", playlists));
     }
 
-    @SuppressWarnings("null")
     private void handleGetPlaylistDetails(HttpExchange exchange) throws IOException {
         Map<String, String> params = parseQueryParams(exchange);
         if (!params.containsKey("id") || params.get("id") == null || params.get("id").isBlank()) {
