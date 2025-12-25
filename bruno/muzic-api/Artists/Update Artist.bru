@@ -1,0 +1,27 @@
+meta {
+  name: Update Artist
+  type: http
+  seq: 13
+}
+
+put {
+  url: {{baseUrl}}/artists?id={{artistId}}
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Test Artist (Updated)",
+    "bio": "Updated by Bruno",
+    "profile_image": null,
+    "spotify_id": null
+  }
+}
+
+tests {
+  expect([200, 404]).to.include(res.status);
+}

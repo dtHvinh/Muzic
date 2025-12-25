@@ -1,5 +1,10 @@
 package com.dthvinh.Server.Endpoints;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
 import com.dthvinh.Server.DTOs.CreatePlaylistDto;
 import com.dthvinh.Server.DTOs.PlaylistResponseDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
@@ -9,12 +14,8 @@ import com.dthvinh.Server.Models.Playlist;
 import com.dthvinh.Server.Repositories.PlaylistRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
-import lombok.AllArgsConstructor;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
+import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Endpoint(route = "playlists")
@@ -118,7 +119,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
                 .map(PlaylistResponseDto::from)
                 .toList();
 
-        logger.Info("There is {%d} artist match query \"%s\"".formatted(playlists.size(), params.get("name")));
+        logger.Info("There is {%d} playlist match query \"%s\"".formatted(playlists.size(), params.get("name")));
 
         sendOk(exchange, Map.of("playlists", playlists));
     }

@@ -1,0 +1,17 @@
+meta {
+  name: Get Playlist Details (Songs)
+  type: http
+  seq: 35
+}
+
+get {
+  url: {{baseUrl}}/playlists?mode=details&id={{playlistId}}
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  expect([200, 400, 404]).to.include(res.status);
+}

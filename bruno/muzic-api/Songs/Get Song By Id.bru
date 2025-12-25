@@ -1,0 +1,13 @@
+meta {
+  name: Get Song By Id
+  type: http
+  seq: 21
+}
+
+get {
+  url: {{baseUrl}}/songs?id={{songId}}
+}
+
+headers {
+  Accept: application/json
+}

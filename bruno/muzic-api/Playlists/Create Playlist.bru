@@ -1,0 +1,25 @@
+meta {
+  name: Create Playlist
+  type: http
+  seq: 32
+}
+
+post {
+  url: {{baseUrl}}/playlists
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Test Playlist",
+    "description": "Created by Bruno"
+  }
+}
+
+tests {
+  expect([200, 400]).to.include(res.status);
+}

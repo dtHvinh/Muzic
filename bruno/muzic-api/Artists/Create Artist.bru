@@ -1,0 +1,27 @@
+meta {
+  name: Create Artist
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{baseUrl}}/artists
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Test Artist",
+    "bio": "Created by Bruno",
+    "profile_image": null,
+    "spotify_id": null
+  }
+}
+
+tests {
+  expect(res.status).to.equal(200);
+}

@@ -1,0 +1,17 @@
+meta {
+  name: Hello
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{baseUrl}}/hello
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  expect(res.status).to.equal(200);
+}

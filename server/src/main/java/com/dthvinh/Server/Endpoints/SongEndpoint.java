@@ -1,5 +1,9 @@
 package com.dthvinh.Server.Endpoints;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import com.dthvinh.Server.DTOs.CreateSongDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
 import com.dthvinh.Server.DTOs.UpdateSongDto;
@@ -10,10 +14,6 @@ import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.Repositories.SongRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 @Endpoint(route = "songs")
 public class SongEndpoint extends BaseEndpoint {
@@ -59,6 +59,8 @@ public class SongEndpoint extends BaseEndpoint {
                     return SongResponseDto.from(s, artistName);
                 })
                 .toList();
+
+        logger.Info("There is {%d} song match query \"%s\"".formatted(list.size(), params.get("title")));
 
         sendOk(exchange, Map.of("songs", list));
     }

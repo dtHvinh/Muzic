@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: muzic-server-deployment
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: muzic-server
+spec:
+  replicas: {{ .Values.server.replicas }}
+  selector:
+    matchLabels:
+      app: muzic-server
+  template:
+    metadata:
+      labels:
+        app: muzic-server
+    spec:
+      containers:
+        - name: muzic-server
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres-service
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: {{ .Values.postgres.database }}
+            - name: DB_USER
+              value: {{ .Values.postgres.user }}
+            - name: DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: password
+          resources:
+{{- toYaml .Values.server.resources | nindent 12 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: muzic-server-service
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: muzic-server
+  ports:
+    - protocol: TCP
+      port: {{ .Values.server.service.port }}
+      targetPort: 8080
+      nodePort: {{ .Values.server.service.nodePort }}
+  type: {{ .Values.server.service.type }}

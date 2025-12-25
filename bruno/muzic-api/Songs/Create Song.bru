@@ -1,0 +1,27 @@
+meta {
+  name: Create Song
+  type: http
+  seq: 22
+}
+
+post {
+  url: {{baseUrl}}/songs
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "title": "Test Song",
+    "artist_id": {{artistId}},
+    "spotify_id": null,
+    "audio_url": null
+  }
+}
+
+tests {
+  expect([200, 400]).to.include(res.status);
+}

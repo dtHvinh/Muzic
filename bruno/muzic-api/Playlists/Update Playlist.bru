@@ -1,0 +1,25 @@
+meta {
+  name: Update Playlist
+  type: http
+  seq: 33
+}
+
+put {
+  url: {{baseUrl}}/playlists?id={{playlistId}}
+}
+
+headers {
+  Content-Type: application/json
+  Accept: application/json
+}
+
+body:json {
+  {
+    "name": "Test Playlist (Updated)",
+    "description": "Updated by Bruno"
+  }
+}
+
+tests {
+  expect([200, 400, 404]).to.include(res.status);
+}

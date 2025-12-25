@@ -1,0 +1,17 @@
+meta {
+  name: Delete Artist
+  type: http
+  seq: 14
+}
+
+delete {
+  url: {{baseUrl}}/artists?id={{artistId}}
+}
+
+headers {
+  Accept: application/json
+}
+
+tests {
+  expect([200, 404]).to.include(res.status);
+}

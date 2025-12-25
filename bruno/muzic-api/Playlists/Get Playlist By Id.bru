@@ -1,0 +1,13 @@
+meta {
+  name: Get Playlist By Id
+  type: http
+  seq: 31
+}
+
+get {
+  url: {{baseUrl}}/playlists?id={{playlistId}}
+}
+
+headers {
+  Accept: application/json
+}

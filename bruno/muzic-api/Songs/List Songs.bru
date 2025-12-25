@@ -1,0 +1,13 @@
+meta {
+  name: List Songs
+  type: http
+  seq: 20
+}
+
+get {
+  url: {{baseUrl}}/songs?title={{songTitle}}&limit={{limit}}&offset={{offset}}
+}
+
+headers {
+  Accept: application/json
+}

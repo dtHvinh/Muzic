@@ -1,0 +1,13 @@
+meta {
+  name: Get Artist By Id
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{baseUrl}}/artists?id={{artistId}}
+}
+
+headers {
+  Accept: application/json
+}

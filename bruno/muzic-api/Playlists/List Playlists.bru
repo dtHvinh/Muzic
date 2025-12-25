@@ -1,0 +1,13 @@
+meta {
+  name: List Playlists
+  type: http
+  seq: 30
+}
+
+get {
+  url: {{baseUrl}}/playlists?name={{playlistName}}&limit={{limit}}&offset={{offset}}
+}
+
+headers {
+  Accept: application/json
+}

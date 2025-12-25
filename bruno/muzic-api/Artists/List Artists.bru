@@ -1,0 +1,13 @@
+meta {
+  name: List Artists
+  type: http
+  seq: 10
+}
+
+get {
+  url: {{baseUrl}}/artists?query={{artistQuery}}&limit={{limit}}&offset={{offset}}
+}
+
+headers {
+  Accept: application/json
+}
