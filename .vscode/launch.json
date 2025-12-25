@@ -5,7 +5,14 @@
       "name": "Main",
       "request": "launch",
       "mainClass": "com.dthvinh.Server.Main",
-      "projectName": "server"
+      "projectName": "server",
+      "env": {
+        "DB_HOST": "localhost",
+        "DB_PORT": "5433",
+        "DB_NAME": "muzicdb",
+        "DB_USER": "postgres",
+        "DB_PASS": "0"
+      }
     }
   ]
 }
