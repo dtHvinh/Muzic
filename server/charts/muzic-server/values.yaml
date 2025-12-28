@@ -1,4 +1,4 @@
-namespace: mzsv
+namespace: app-muzic
 
 postgres:
   database: muzicdb
@@ -12,11 +12,14 @@ postgres:
     limits:
       memory: "512Mi"
       cpu: "500m"
+  service:
+    port: 5432
+    nodePort: 30432
 
 server:
   image:
     repository: hienvinh/mz-sv
-    tag: "0.0.2-beta-0.0.1"
+    tag: "0.0.3"
     pullPolicy: IfNotPresent
   replicas: 1
   resources:
