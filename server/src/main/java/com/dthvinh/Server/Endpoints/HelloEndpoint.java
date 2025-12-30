@@ -22,13 +22,13 @@ public class HelloEndpoint extends BaseEndpoint {
     public void handle(HttpExchange exchange) throws IOException {
         Map<String, String> queryParams = parseQueryParams(exchange);
 
-        logger.Info("Hello endpoint");
+        logger.info("Hello endpoint");
         if (queryParams.get("mode") != null && queryParams.get("mode").equals("test")) {
-            logger.Info("Test mode activated");
+            logger.info("Test mode activated");
             sendOk(exchange, Map.of("status", "success", "data", "This is a test response"));
             return;
         } else if (queryParams.get("mode") != null && queryParams.get("mode").equals("exception")) {
-            logger.Info("Exception mode activated");
+            logger.info("Exception mode activated");
             throw new IOException("Test exception from HelloEndpoint");
         }
         sendOk(exchange, Map.of("message", "Hello, World!"));

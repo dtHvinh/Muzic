@@ -1,8 +1,8 @@
 package com.dthvinh.Server.SummerBoot.Filters;
 
-import com.sun.net.httpserver.HttpExchange;
-
 import java.io.IOException;
+
+import com.sun.net.httpserver.HttpExchange;
 
 public class PerformanceMeter extends BaseFilter {
 
@@ -15,12 +15,10 @@ public class PerformanceMeter extends BaseFilter {
         try {
             chain.doFilter(exchange);
         } finally {
-            long durationMs =
-                    (System.nanoTime() - start) / 1_000_000;
+            long durationMs = (System.nanoTime() - start) / 1_000_000;
 
-            logger.Info(
-                    "%s - %s took %dms".formatted(exchange.getRequestMethod(), exchange.getRequestURI(), durationMs)
-            );
+            logger.info(
+                    "%s - %s took %dms".formatted(exchange.getRequestMethod(), exchange.getRequestURI(), durationMs));
         }
     }
 

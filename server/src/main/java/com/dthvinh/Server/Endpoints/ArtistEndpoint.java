@@ -1,5 +1,10 @@
 package com.dthvinh.Server.Endpoints;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 import com.dthvinh.Server.DTOs.ArtistResponseDto;
 import com.dthvinh.Server.DTOs.CreateArtistDto;
 import com.dthvinh.Server.DTOs.UpdateArtistDto;
@@ -8,11 +13,6 @@ import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  *
@@ -65,7 +65,7 @@ public class ArtistEndpoint extends BaseEndpoint {
                 .map(ArtistResponseDto::from)
                 .toList();
 
-        logger.Info("There is {%d} artist match query \"%s\"".formatted(artists.size(), params.get("name")));
+        logger.info("There is {%d} artist match query \"%s\"".formatted(artists.size(), params.get("name")));
 
         sendOk(exchange, Map.of("artists", artists));
     }

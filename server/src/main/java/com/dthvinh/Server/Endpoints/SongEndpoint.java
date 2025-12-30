@@ -60,7 +60,7 @@ public class SongEndpoint extends BaseEndpoint {
                 })
                 .toList();
 
-        logger.Info("There is {%d} song match query \"%s\"".formatted(list.size(), params.get("title")));
+        logger.info("There is {%d} song match query \"%s\"".formatted(list.size(), params.get("title")));
 
         sendOk(exchange, Map.of("songs", list));
     }

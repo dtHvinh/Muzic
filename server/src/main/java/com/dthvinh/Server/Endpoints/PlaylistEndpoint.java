@@ -119,7 +119,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
                 .map(PlaylistResponseDto::from)
                 .toList();
 
-        logger.Info("There is {%d} playlist match query \"%s\"".formatted(playlists.size(), params.get("name")));
+        logger.info("There is {%d} playlist match query \"%s\"".formatted(playlists.size(), params.get("name")));
 
         sendOk(exchange, Map.of("playlists", playlists));
     }
@@ -191,7 +191,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
 
         repository.deleteFromPlaylist(playlistId, songId);
 
-        logger.Info("Remove song #{%d} from playlist #{%d}".formatted(songId, playlistId));
+        logger.info("Remove song #{%d} from playlist #{%d}".formatted(songId, playlistId));
 
         sendOk(exchange, Map.of("playlistId", playlistId, "songId", songId));
     }
@@ -202,7 +202,7 @@ public class PlaylistEndpoint extends BaseEndpoint {
 
         repository.addToPlaylist(playlistId, songId);
 
-        logger.Info("Add song #{%d} to playlist #{%d}".formatted(songId, playlistId));
+        logger.info("Add song #{%d} to playlist #{%d}".formatted(songId, playlistId));
 
         sendOk(exchange, Map.of("playlistId", playlistId, "songId", songId));
     }
