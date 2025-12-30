@@ -6,6 +6,8 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import com.dthvinh.Server.SummerBoot.Utils.EnVariables;
+
 public class AppDataSource implements DataSource {
 
     private final String url;
@@ -19,11 +21,11 @@ public class AppDataSource implements DataSource {
     }
 
     public static AppDataSource fromEnv() {
-        String host = System.getenv("DB_HOST");
-        String port = System.getenv("DB_PORT");
-        String dbName = System.getenv("DB_NAME");
-        String user = System.getenv("DB_USER");
-        String pass = System.getenv("DB_PASS");
+        String host = EnVariables.DATABASE_HOST;
+        String port = EnVariables.DATABASE_PORT;
+        String dbName = EnVariables.DATABASE_NAME;
+        String user = EnVariables.DATABASE_USER;
+        String pass = EnVariables.DATABASE_PASSWORD;
 
         String url = String.format("jdbc:postgresql://%s:%s/%s", host, port, dbName);
 
