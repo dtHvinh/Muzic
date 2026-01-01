@@ -1,6 +1,6 @@
 package SummerBootTests.DI;
 
-import com.dthvinh.Server.SummerBoot.DI.ServiceContainer;
+import com.dthvinh.Server.Lib.SummerBoot.DI.ServiceContainer;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

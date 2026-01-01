@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { RoutingContext } from "./RoutingContext";
+import {useState} from "react";
+import {RoutingContext} from "./RoutingContext";
 
 /**
  * Contain all routing logic for this app.
@@ -13,71 +13,73 @@ import { RoutingContext } from "./RoutingContext";
  * }
  */
 
-export const RoutingContextProvider = ({ children }) => {
-  const [currentRoute, setCurrentRoute] = useState("home");
-  const [__routeMapping, __setRouteMapping] = useState({});
-  const [__fallbackComponent, __setFallbackComponent] = useState();
-  const [__queryParams, __setQueryParams] = useState({});
+export const RoutingContextProvider = ({children}) => {
+    const [currentRoute, setCurrentRoute] = useState("home");
+    const [__routeMapping, __setRouteMapping] = useState({});
+    const [__fallbackComponent, __setFallbackComponent] = useState();
+    const [__queryParams, __setQueryParams] = useState({});
+    const [queryChangeFlag, __setQueryChangeFlag] = useState(true);
 
-  const mapRoute = (route, component) => {
-    __setRouteMapping((prev) => ({
-      ...prev,
-      [route]: component,
-    }));
-  };
+    const mapRoute = (route, component) => {
+        __setRouteMapping((prev) => ({
+            ...prev,
+            [route]: component,
+        }));
+    };
 
-  const getRouteContent = (route) => {
-    return route
-      ? __routeMapping[route] ?? __fallbackComponent
-      : __routeMapping[currentRoute] ?? __fallbackComponent;
-  };
+    const getRouteContent = (route) => {
+        return route
+            ? __routeMapping[route] ?? __fallbackComponent
+            : __routeMapping[currentRoute] ?? __fallbackComponent;
+    };
 
-  const setFallback = (component) => {
-    __setFallbackComponent(component);
-  };
+    const setFallback = (component) => {
+        __setFallbackComponent(component);
+    };
 
-  const getQuery = (query) => {
-    return __queryParams[query];
-  };
+    const getQuery = (query) => {
+        return __queryParams[query];
+    };
 
-  const getAllQueries = () => {
-    return __queryParams;
-  };
+    const getAllQueries = () => {
+        return __queryParams;
+    };
 
-  const setQuery = (value) => {
-    __setQueryParams((cur) => ({
-      ...cur,
-      ...value,
-    }));
-  };
+    const setQuery = (value) => {
+        __setQueryChangeFlag(!queryChangeFlag);
+        __setQueryParams((cur) => ({
+            ...cur,
+            ...value,
+        }));
+    };
 
-  const clearAllQuery = () => {
-    __setQueryParams({});
-  };
+    const clearAllQuery = () => {
+        __setQueryParams({});
+    };
 
-  const navigateTo = (route, queryObj) => {
-    clearAllQuery();
-    setCurrentRoute(route);
-    setQuery(queryObj);
-  };
+    const navigateTo = (route, queryObj) => {
+        setCurrentRoute(route);
+        clearAllQuery();
+        setQuery(queryObj);
+    };
 
-  return (
-    <RoutingContext.Provider
-      value={{
-        currentRoute,
-        setCurrentRoute,
-        mapRoute,
-        getRouteContent,
-        setFallback,
+    return (
+        <RoutingContext.Provider
+            value={{
+                currentRoute,
+                setCurrentRoute,
+                mapRoute,
+                getRouteContent,
+                setFallback,
 
-        navigateTo,
-        setQuery,
-        getAllQueries,
-        getQuery,
-        clearAllQuery,
-      }}
-    >
-      {children}
-    </RoutingContext.Provider>
-  );
+                navigateTo,
+                setQuery,
+                getAllQueries,
+                getQuery,
+                clearAllQuery,
+            }}
+        >
+            {children}
+        </RoutingContext.Provider>
+    );
 };

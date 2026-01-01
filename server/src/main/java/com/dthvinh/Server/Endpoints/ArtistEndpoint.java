@@ -11,7 +11,7 @@ import com.dthvinh.Server.DTOs.UpdateArtistDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
 import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Repositories.ArtistRepository;
-import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
+import com.dthvinh.Server.Lib.SummerBoot.Anotations.Endpoint;
 import com.sun.net.httpserver.HttpExchange;
 
 /**

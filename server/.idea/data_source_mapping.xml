@@ -2,6 +2,5 @@
 <project version="4">
   <component name="DataSourcePerFileMappings">
     <file url="file://$USER_HOME$/Dev/app/Muzic-feat-sidebar/server/.idea/queries/Query.sql" value="7c1a50ab-cb22-4694-96b8-44fc5d0ece71" />
-    <file url="file://$PROJECT_DIR$/src/main/java/com/dthvinh/Server/Repositories/SongRepository.java" value="7c1a50ab-cb22-4694-96b8-44fc5d0ece71" />
   </component>
 </project>

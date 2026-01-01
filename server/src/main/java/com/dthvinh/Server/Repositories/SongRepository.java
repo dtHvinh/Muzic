@@ -2,7 +2,7 @@ package com.dthvinh.Server.Repositories;
 
 import com.dthvinh.Server.Models.Song;
 import com.dthvinh.Server.Repositories.Contract.Repository;
-import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+import com.dthvinh.Server.Lib.SummerBoot.Data.DatabaseService;
 import lombok.AllArgsConstructor;
 
 import java.sql.PreparedStatement;

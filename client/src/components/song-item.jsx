@@ -1,6 +1,7 @@
-import { ListMusic, Music, Pause, Play, Trash2 } from "lucide-react";
+import { ListMusic, ListX, Music, Pause, Play, Trash2 } from "lucide-react";
 import React from "react";
 import usePlaylists from "../hooks/usePlaylists";
+import { useRoutingContext } from '../hooks/useRoutingContext';
 
 function formatTime(seconds) {
   const s = Number.isFinite(seconds) ? Math.max(0, seconds) : 0;
@@ -16,7 +17,10 @@ export default function SongItem({
   onPauseRequest,
   onDelete,
   onAddToPlaylist,
+  onRemoveFromPlaylist
 }) {
+  const { currentRoute } = useRoutingContext();
+
   const audioRef = React.useRef(null);
 
   const [isPlaying, setIsPlaying] = React.useState(false);
@@ -80,6 +84,10 @@ export default function SongItem({
     setSelectedPlaylist("");
   };
 
+  const handleRemoveFromPlaylist = () => {
+    onRemoveFromPlaylist?.();
+  };
+
   return (
     <li className="group w-full relative overflow-hidden rounded-xl bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-800/40 dark:to-gray-900/40 border border-gray-200 dark:border-gray-700/50 transition-all duration-300 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg">
       <div className="p-5">
@@ -117,7 +125,7 @@ export default function SongItem({
               )}
             </button>
 
-            {onDelete && (
+            {onDelete && currentRoute == 'song' && (
               <button
                 type="button"
                 onClick={handleDelete}
@@ -133,6 +141,22 @@ export default function SongItem({
                 )}
               </button>
             )}
+
+            {currentRoute == 'playlist/details' &&
+              <button
+                type="button"
+                onClick={() => {
+                  if (confirm('Do you want to remove from this playlist')) {
+                    handleRemoveFromPlaylist();
+                  }
+                }}
+                className="p-3 flex items-center justify-center rounded-full border border-gray-300 dark:border-gray-600 bg-white text-red-500 dark:bg-gray-800 transition-all hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label="Delete song"
+                title="Delete song"
+              >
+                <ListX className="h-5 w-5" />
+              </button>
+            }
 
             <div
               className="
@@ -198,9 +222,8 @@ export default function SongItem({
                 <div
                   className="absolute inset-y-0 left-0 bg-linear-to-r from-blue-500 to-purple-500 rounded-full transition-all duration-150"
                   style={{
-                    width: `${
-                      duration > 0 ? (currentTime / duration) * 100 : 0
-                    }%`,
+                    width: `${duration > 0 ? (currentTime / duration) * 100 : 0
+                      }%`,
                   }}
                 />
                 <input
@@ -229,6 +252,6 @@ export default function SongItem({
           </p>
         )}
       </div>
-    </li>
+    </li >
   );
 }

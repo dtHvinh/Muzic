@@ -1,6 +1,6 @@
 package SummerBootTests.Reflection;
 
-import com.dthvinh.Server.SummerBoot.Reflection.ClassReflectionHelper;
+import com.dthvinh.Server.Lib.SummerBoot.Reflection.ClassReflectionHelper;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Constructor;

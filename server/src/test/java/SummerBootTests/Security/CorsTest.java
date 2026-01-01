@@ -1,7 +1,7 @@
 package SummerBootTests.Security;
 
 
-import com.dthvinh.Server.SummerBoot.Security.Cors;
+import com.dthvinh.Server.Lib.SummerBoot.Security.Cors;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

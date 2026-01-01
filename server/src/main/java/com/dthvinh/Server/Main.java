@@ -1,9 +1,9 @@
 package com.dthvinh.Server;
 
-import com.dthvinh.Server.SummerBoot.SummerBootRunner;
+import com.dthvinh.Server.Lib.AppRunner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        SummerBootRunner.run();
+        AppRunner.run();
     }
 }

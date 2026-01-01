@@ -4,12 +4,15 @@
  */
 package com.dthvinh.Server.Endpoints;
 
+import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
+import com.dthvinh.Server.Lib.Kafka.Event.HelloEventArgs;
+import com.dthvinh.Server.Lib.Kafka.Publishers.GlobalAppPublisher;
+import com.dthvinh.Server.Lib.Kafka.Publishers.KafkaPublisher;
+import com.dthvinh.Server.Lib.SummerBoot.Anotations.Endpoint;
+import com.sun.net.httpserver.HttpExchange;
+
 import java.io.IOException;
 import java.util.Map;
-
-import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
-import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
-import com.sun.net.httpserver.HttpExchange;
 
 /**
  *
@@ -17,6 +20,7 @@ import com.sun.net.httpserver.HttpExchange;
  */
 @Endpoint(route = "hello")
 public class HelloEndpoint extends BaseEndpoint {
+    public final KafkaPublisher publisher = new GlobalAppPublisher();
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -32,5 +36,8 @@ public class HelloEndpoint extends BaseEndpoint {
             throw new IOException("Test exception from HelloEndpoint");
         }
         sendOk(exchange, Map.of("message", "Hello, World!"));
+
+        HelloEventArgs<Map<String, String>> e = new HelloEventArgs<>(Map.of("name", "John"));
+        publisher.send(e);
     }
 }

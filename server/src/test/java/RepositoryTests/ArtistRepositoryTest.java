@@ -2,7 +2,7 @@ package RepositoryTests;
 
 import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Repositories.ArtistRepository;
-import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+import com.dthvinh.Server.Lib.SummerBoot.Data.DatabaseService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

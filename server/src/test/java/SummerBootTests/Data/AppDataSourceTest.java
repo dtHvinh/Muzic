@@ -1,6 +1,6 @@
 package SummerBootTests.Data;
 
-import com.dthvinh.Server.SummerBoot.Data.AppDataSource;
+import com.dthvinh.Server.Lib.SummerBoot.Data.AppDataSource;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;

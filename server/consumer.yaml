@@ -1,0 +1,5 @@
+group:
+  muzic-consumer-group-1:
+    topics:
+      - app
+    consumer-count: 5

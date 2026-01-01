@@ -1,29 +1,29 @@
 package com.dthvinh.Server.Endpoints;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-
 import com.dthvinh.Server.DTOs.CreateSongDto;
 import com.dthvinh.Server.DTOs.SongResponseDto;
 import com.dthvinh.Server.DTOs.UpdateSongDto;
 import com.dthvinh.Server.Endpoints.Base.BaseEndpoint;
+import com.dthvinh.Server.Lib.SummerBoot.Anotations.Endpoint;
 import com.dthvinh.Server.Models.Artist;
 import com.dthvinh.Server.Models.Song;
 import com.dthvinh.Server.Repositories.ArtistRepository;
 import com.dthvinh.Server.Repositories.SongRepository;
-import com.dthvinh.Server.SummerBoot.Anotations.Endpoint;
+import com.dthvinh.Server.Service.MetricService;
 import com.sun.net.httpserver.HttpExchange;
+import lombok.AllArgsConstructor;
+
+import java.io.IOException;
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
 
 @Endpoint(route = "songs")
+@AllArgsConstructor
 public class SongEndpoint extends BaseEndpoint {
     private final SongRepository songs;
     private final ArtistRepository artists;
-
-    public SongEndpoint(SongRepository songs, ArtistRepository artists) {
-        this.songs = songs;
-        this.artists = artists;
-    }
+    private final MetricService metricService;
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
@@ -59,6 +59,10 @@ public class SongEndpoint extends BaseEndpoint {
                     return SongResponseDto.from(s, artistName);
                 })
                 .toList();
+
+        for (SongResponseDto d : list) {
+            metricService.sendMetric("muzic.song.search", Instant.now().getEpochSecond(), 1, Map.of("songId", d.id().toString()));
+        }
 
         logger.info("There is {%d} song match query \"%s\"".formatted(list.size(), params.get("title")));
 

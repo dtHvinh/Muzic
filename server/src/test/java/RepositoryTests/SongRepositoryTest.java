@@ -2,7 +2,7 @@ package RepositoryTests;
 
 import com.dthvinh.Server.Models.Song;
 import com.dthvinh.Server.Repositories.SongRepository;
-import com.dthvinh.Server.SummerBoot.Data.DatabaseService;
+import com.dthvinh.Server.Lib.SummerBoot.Data.DatabaseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
